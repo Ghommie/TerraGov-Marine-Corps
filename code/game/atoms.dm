@@ -512,7 +512,7 @@ its easier to just keep the beam vertical.
 	return flags_pass&passflag
 
 //Generalized Fire Proc.
-/atom/proc/flamer_fire_act()
+/atom/proc/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	return
 
 

@@ -144,7 +144,7 @@
 	if(exposed_temperature > 300)
 		Die()
 
-/obj/item/clothing/mask/facehugger/flamer_fire_act()
+/obj/item/clothing/mask/facehugger/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	Die()
 
 /obj/item/clothing/mask/facehugger/proc/monitor_surrounding()

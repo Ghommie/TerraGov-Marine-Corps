@@ -108,5 +108,5 @@
 	if(exposed_temperature > 300)
 		qdel(src)
 
-/obj/item/xeno_egg/flamer_fire_act()
+/obj/item/xeno_egg/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	qdel(src)

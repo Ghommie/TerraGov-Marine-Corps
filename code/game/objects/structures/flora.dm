@@ -45,7 +45,7 @@
 /obj/structure/flora/update_icon()
 	return
 
-/obj/structure/flora/flamer_fire_act()
+/obj/structure/flora/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	if(on_fire)
 		return
 	on_fire = TRUE
@@ -109,7 +109,7 @@
 	else
 		return ..()
 
-/obj/structure/flora/tree/flamer_fire_act()
+/obj/structure/flora/tree/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	if(on_fire == FALSE)
 		on_fire = TRUE
 		SetLuminosity(5)
@@ -143,7 +143,7 @@
 	density = FALSE
 	pixel_x = -16
 
-/obj/structure/flora/stump/flamer_fire_act()
+/obj/structure/flora/stump/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	return
 
 /obj/structure/flora/tree/pine
@@ -263,7 +263,7 @@
 
 /obj/structure/flora/pottedplant/ten
 	icon_state = "plant-10"
-	
+
 //newbushes
 
 /obj/structure/flora/ausbushes

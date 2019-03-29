@@ -70,7 +70,7 @@
 		to_chat(M, "<span class='danger'>The intense heat forces you out of [src]!</span>")
 		open()
 
-/obj/structure/closet/bodybag/tarp/flamer_fire_act()
+/obj/structure/closet/bodybag/tarp/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	var/mob/M = locate() in src //need to be occupied
 	if(!opened && M)
 		to_chat(M, "<span class='danger'>The intense heat forces you out of [src]!</span>")

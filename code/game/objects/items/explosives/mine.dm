@@ -142,7 +142,7 @@
 		tripwire.forceMove(step_direction)
 	trigger_explosion()
 
-/obj/item/explosive/mine/flamer_fire_act() //adding mine explosions
+/obj/item/explosive/mine/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1) //adding mine explosions
 	var/turf/T = loc
 	qdel(src)
 	explosion(T, -1, -1, 2)

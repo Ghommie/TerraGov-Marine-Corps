@@ -127,7 +127,7 @@ They're all essentially identical when it comes to getting the job done.
 	gun_type = source.gun_type
 
 //~Art interjecting here for explosion when using flamer procs.
-/obj/item/ammo_magazine/flamer_fire_act()
+/obj/item/ammo_magazine/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	switch(current_rounds)
 		if(0) return
 		if(1 to 100) explosion(loc,  -1, -1, 0, 2) //blow it up.
@@ -347,7 +347,7 @@ Turn() or Shift() as there is virtually no overhead. ~N
 				qdel(AM)
 
 //explosion when using flamer procs.
-/obj/item/big_ammo_box/flamer_fire_act()
+/obj/item/big_ammo_box/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	switch(bullet_amount)
 		if(0) return
 		if(1 to 100) explosion(loc,  0, 0, 1, 2) //blow it up.

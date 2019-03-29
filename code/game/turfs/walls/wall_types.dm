@@ -362,7 +362,7 @@
 	if(!locate(/obj/effect/alien/weeds) in loc)
 		new /obj/effect/alien/weeds(loc)
 
-/turf/closed/wall/resin/flamer_fire_act()
+/turf/closed/wall/resin/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	take_damage(50)
 
 //this one is only for map use

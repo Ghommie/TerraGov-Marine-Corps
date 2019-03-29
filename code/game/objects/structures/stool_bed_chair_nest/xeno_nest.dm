@@ -175,7 +175,7 @@
 		density = 0
 		qdel(src)
 
-/obj/structure/bed/nest/flamer_fire_act()
+/obj/structure/bed/nest/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	health -= 50
 	healthcheck()
 

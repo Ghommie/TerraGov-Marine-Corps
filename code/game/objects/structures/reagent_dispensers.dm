@@ -200,7 +200,7 @@
 	reagents.remove_reagent("fuel",amount)
 	new /obj/effect/decal/cleanable/liquid_fuel(src.loc, amount,1)
 
-/obj/structure/reagent_dispensers/fueltank/flamer_fire_act()
+/obj/structure/reagent_dispensers/fueltank/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	explode()
 
 /obj/structure/reagent_dispensers/peppertank

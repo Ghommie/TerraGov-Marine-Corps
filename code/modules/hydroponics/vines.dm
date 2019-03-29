@@ -265,7 +265,7 @@
 			die()
 			return
 
-/obj/effect/plantsegment/flamer_fire_act()
+/obj/effect/plantsegment/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	qdel(src)
 	return
 

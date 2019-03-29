@@ -14,7 +14,7 @@
 		qdel(src)
 	return
 
-/obj/item/explosive/grenade/frag/flamer_fire_act()
+/obj/item/explosive/grenade/frag/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	var/turf/T = loc
 	qdel(src)
 	explosion(T, -1, -1, 3)
@@ -39,7 +39,7 @@
 		throw_range = initial(throw_range)
 
 
-/obj/item/explosive/grenade/frag/training/flamer_fire_act()
+/obj/item/explosive/grenade/frag/training/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	return
 
 
@@ -127,18 +127,16 @@
 	return
 
 
-proc/flame_radius(radius = 1, turf/T, burn_intensity = 25, burn_duration = 25, burn_damage = 25, fire_stacks = 15, int_var = 0.5, dur_var = 0.5, colour = "red") //~Art updated fire.
+/proc/flame_radius(radius = 1, turf/T, burn_intensity = 10, burn_duration = 10, burn_damage = 25, fire_stacks = 10, int_var, dur_var, colour) //~Art updated fire.
 	if(!T || !isturf(T))
-		return
+		CRASH("flame_radius() called [T ? "on a non-turf target: ([T])" : "without a target turf"]")
 	radius = CLAMP(radius, 1, 50) //Sanitize inputs
-	int_var = CLAMP(int_var, 0.1,0.5)
-	dur_var = CLAMP(int_var, 0.1,0.5)
-	fire_stacks = rand(burn_damage*(0.5-int_var),burn_damage*(0.5+int_var) ) + rand(burn_damage*(0.5-int_var),burn_damage*(0.5+int_var) )
-	burn_damage = rand(burn_damage*(0.5-int_var),burn_damage*(0.5+int_var) ) + rand(burn_damage*(0.5-int_var),burn_damage*(0.5+int_var) )
-	for(var/obj/flamer_fire/F in range(radius,T)) // No stacking flames!
+	burn_damage = burn_damage * (rand(int_var, 1))
+	for(var/obj/flamer_fire/F in range(radius, T)) // No stacking flames!
 		qdel(F)
-	for(var/turf/IT in diamondturfs(T,radius))
-		new /obj/flamer_fire(IT, rand(burn_intensity*(0.5-int_var), burn_intensity*(0.5+int_var)) + rand(burn_intensity*(0.5-int_var), burn_intensity*(0.5+int_var)), rand(burn_duration*(0.5-int_var), burn_duration*(0.5-int_var)) + rand(burn_duration*(0.5-int_var), burn_duration*(0.5-int_var)), colour, 0, burn_damage, fire_stacks)
+	for(var/A in diamondturfs(T, radius))
+		var/turf/IT = A
+		new /obj/flamer_fire(T, burn_duration, burn_intensity, radius, fire_stacks, burn_damage, int_var, dur_var, colour)
 
 
 /obj/item/explosive/grenade/incendiary/molotov
@@ -253,7 +251,7 @@ proc/flame_radius(radius = 1, turf/T, burn_intensity = 25, burn_duration = 25, b
 		qdel(src)
 	return
 
-/obj/item/explosive/grenade/impact/flamer_fire_act()
+/obj/item/explosive/grenade/impact/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	var/turf/T = loc
 	qdel(src)
 	explosion(T, -1, -1, 1, 2)
@@ -281,7 +279,7 @@ proc/flame_radius(radius = 1, turf/T, burn_intensity = 25, burn_duration = 25, b
 	fuel = rand(800, 1000) // Sorry for changing this so much but I keep under-estimating how long X number of ticks last in seconds.
 	return ..()
 
-/obj/item/explosive/grenade/flare/flamer_fire_act()
+/obj/item/explosive/grenade/flare/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	if(!active)
 		turn_on()
 

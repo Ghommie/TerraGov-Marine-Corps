@@ -15,7 +15,7 @@
 	if(health <= 0)
 		qdel(src)
 
-/obj/effect/alien/flamer_fire_act()
+/obj/effect/alien/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	health -= 50
 	healthcheck()
 
@@ -178,7 +178,7 @@
 		..()
 
 
-/obj/effect/alien/resin/trap/flamer_fire_act()
+/obj/effect/alien/resin/trap/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	if(hugger)
 		hugger.forceMove(loc)
 		hugger.Die()
@@ -330,7 +330,7 @@
 	healthcheck()
 	return TRUE
 
-/obj/structure/mineral_door/resin/flamer_fire_act()
+/obj/structure/mineral_door/resin/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	health -= 50
 	if(health <= 0)
 		qdel(src)
@@ -620,7 +620,7 @@
 	if(health <= 0)
 		Burst(TRUE)
 
-/obj/effect/alien/egg/flamer_fire_act() // gotta kill the egg + hugger
+/obj/effect/alien/egg/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1) // gotta kill the egg + hugger
 	Burst(TRUE)
 
 /obj/effect/alien/egg/fire_act()

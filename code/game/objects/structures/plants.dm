@@ -99,7 +99,7 @@
 		else
 			qdel(src)
 
-/obj/structure/bush/flamer_fire_act(heat)
+/obj/structure/bush/flamer_fire_act(burnlevel, fire_stack, fire_mod = 1)
 	health -= 30
 	healthcheck(src)
 
@@ -169,4 +169,4 @@ var/jungle_plants_init = 0
 		overlays += fruit_overlay
 	else
 		to_chat(user, "<span class='warning'> There are no fruit left on [src].</span>")
-		
+
