@@ -1020,7 +1020,7 @@ GLOBAL_LIST_INIT(no_sticky_resin, typecacheof(list(/obj/item/clothing/mask/faceh
 	smoke.set_up(1, T)
 	smoke.start()
 	playsound(T, 'sound/weapons/gun_flamethrower2.ogg', 50, 1, 4)
-	flame_radius(radius, T, 25, 25, 25, 15)
+	flame_radius(radius, T, 20, 20, 20, 15, 0.1, 0.1)
 
 
 /datum/ammo/rocket/wp/on_hit_mob(mob/M,obj/item/projectile/P)

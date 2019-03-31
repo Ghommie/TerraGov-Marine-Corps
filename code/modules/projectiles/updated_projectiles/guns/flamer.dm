@@ -459,7 +459,7 @@
 	var/initial_firemod = 1.2
 	var/flame_color = "red"
 
-/obj/flamer_fire/New(location, fire_lvl, burn_lvl, fire_spread_amount, stack, init_dmg, intensity_var = 0, duration_var = 0, f_color, epicenter)
+/obj/flamer_fire/New(location, fire_lvl, burn_lvl, fire_spread_amount, stack, init_dmg, intensity_var = 0, duration_var = 0, decay_coeff = 0.9, f_color)
 	. = ..()
 	if (f_color)
 		flame_color = f_color
@@ -471,59 +471,21 @@
 		initial_firemod = init_dmg * (1 + rand(-intensity_var, intensity_var))
 	update_icon()
 	START_PROCESSING(SSobj, src)
-
+	var/obj/flamer_fire/old = locate() in loc
+	qdel(old)
+	for(var/O in loc)
+		var/atom/A = O
+		A.flamer_fire_act(burnlevel, fire_stack, initial_firemod)
 	if(!fire_spread_amount)
 		return
-
-	var/list/affected = circlerangeturfs(src, radius) - location
-
-
-
-
-
+	var/list/affected = circle_casted_turfs(src, fire_spread_amount, angle_coeff = 0.7, CALLBACK_DUMMY, /turf/.proc/CanPassContents, src, CALLBACK_DUMMY)
+	var/radius_squared = sqrt(50/fire_spread_amount)
 	for(var/A in affected)
 		var/turf/T = A
-		if(istype(IT,/turf/open/space))
+		if(istype(T,/turf/open/space))
 			continue
-		var/flamed = TRUE
-		var/T_angle = Get_Angle(location, T)
-		for(var/B in getline(src, T) - list(T, location))
-			var/turf/IT = B
-			if(IT.density)
-
-				var/IT_angle = Get_Angle(location, IT)
-				var/complementary_angle = 315 + abs(closer_angle_difference(T_angle, IT_angle))
-				var/leniency = 360 - 45 * (get_dist_euclidian(location, IT)/get_dist_euclidian(location, T))
-				if(complementary_angle < leniency) 220 -
-					continue
-				affected -= T
-				break
-			for(var/obj/O in IT)
-				if(!O.CanPass(src, IT))
-					affected -= T
-					break
-	for(var/A in affected)
-		var/obj/flamer_fire/old = locate() in T
-		qdel(old)
-	if(fire_spread_amount > 0)
-		var/turf/T
-		for(var/dirn in cardinal)
-			T = get_step(loc, dirn)
-			if(istype(T,/turf/open/space))
-				continue
-			var/obj/flamer_fire/F
-			if(locate(F) in T)
-				qdel(F) //No stacking
-			var/new_spread_amt = T.density ? 0 : fire_spread_amount - 1 //walls stop the spread
-			if(new_spread_amt)
-				for(var/obj/O in T)
-					if(!O.CanPass(src, loc))
-						new_spread_amt = 0
-						break
-			spawn(0) //delay so the newer flame don't block the spread of older flames
-				new /obj/flamer_fire(T, fire_lvl, burn_lvl, f_color, new_spread_amt, fire_stacks, fire_damage)
-				for(var/mob/living/C in T)
-					C.flamer_fire_act(burnlevel, fire_stack, initial_firemod)
+		var/decay = decay_coeff * sqrt(get_dist_euclidian(src, T)) * radius_squared
+		new /obj/flamer_fire(T, round(fire_lvl ** decay), round(burn_lvl ** decay), stack = round(stack ** decay), round(init_dmg ** decay), intensity_var, duration_var, decay_coeff, f_color)
 
 /obj/flamer_fire/Destroy()
 	SetLuminosity(0)
@@ -605,8 +567,8 @@
 	if(!isturf(loc) || !firelevel)
 		qdel(src)
 		return
-	updateicon()
-
+	update_icon()
+	var/turf/T = get_turf(src)
 	T.flamer_fire_act(burnlevel, fire_stack)
 	for(var/i in T)
 		var/atom/A = i
@@ -614,7 +576,3 @@
 
 	firelevel = max(firelevel - 2, 0)
 	return
-
-/obj/flamer_fire/blue
-	icon_state = "blue_2"
-	flame_color = "blue"

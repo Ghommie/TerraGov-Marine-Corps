@@ -10,7 +10,6 @@
 #define DEBUG
 // END_PREFERENCES
 // BEGIN_INCLUDE
-#include "test.dm"
 #include "_maps\_basemap.dm"
 #include "_maps\map_files\generic\Admin_Level.dmm"
 #include "code\global.dm"

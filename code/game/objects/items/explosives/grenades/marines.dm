@@ -127,16 +127,12 @@
 	return
 
 
-/proc/flame_radius(radius = 1, turf/T, burn_intensity = 10, burn_duration = 10, burn_damage = 25, fire_stacks = 10, int_var, dur_var, colour) //~Art updated fire.
+/proc/flame_radius(radius = 1, turf/T, burn_intensity = 10, burn_duration = 10, burn_damage = 25, fire_stacks = 10, int_var = 0, dur_var = 0, decay_var = 0.9, colour)
 	if(!T || !isturf(T))
-		CRASH("flame_radius() called [T ? "on a non-turf target: ([T])" : "without a target turf"]")
+		return
 	radius = CLAMP(radius, 1, 50) //Sanitize inputs
-	burn_damage = burn_damage * (rand(int_var, 1))
-	for(var/obj/flamer_fire/F in range(radius, T)) // No stacking flames!
-		qdel(F)
-	for(var/A in diamondturfs(T, radius))
-		var/turf/IT = A
-		new /obj/flamer_fire(T, burn_duration, burn_intensity, radius, fire_stacks, burn_damage, int_var, dur_var, colour)
+	burn_damage = burn_damage * (1 + rand(-int_var, int_var))
+	new /obj/flamer_fire(T, burn_duration, burn_intensity, radius, fire_stacks, burn_damage, int_var, dur_var, decay_var, colour)
 
 
 /obj/item/explosive/grenade/incendiary/molotov

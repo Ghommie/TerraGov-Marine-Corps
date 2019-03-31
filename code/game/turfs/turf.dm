@@ -427,6 +427,14 @@
 	if(istype(mover)) // turf/Enter(...) will perform more advanced checks
 		return !density
 
+/turf/proc/CanPassContents(atom/movable/mover, turf/target)
+	if(!CanPass(mover, target))
+		return FALSE
+	for(var/obj/O in src)
+		if(!O.CanPass(mover, target))
+			return FALSE
+	return TRUE
+
 GLOBAL_LIST_INIT(blacklisted_automated_baseturfs, typecacheof(list(
 	/turf/open/space,
 	/turf/baseturf_bottom,

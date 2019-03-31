@@ -144,7 +144,7 @@ var/obj/structure/ship_rail_gun/almayer_rail_gun
 	if(!loaded_tray)
 		to_chat(user, "<span class='warning'>You need to load the tray before chambering it.</span>")
 		return
-	
+
 	if(ob_cannon_busy)
 		return
 
@@ -390,6 +390,7 @@ var/obj/structure/ship_rail_gun/almayer_rail_gun
 
 /obj/structure/ob_ammo/warhead/incendiary/warhead_impact(turf/target, inaccuracy_amt = 0)
 	var/range_num = max(15 - inaccuracy_amt, 12)
+	explosion(target, 1, -1, 2)
 	flame_radius(range_num, target)
 
 
