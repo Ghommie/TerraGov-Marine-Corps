@@ -210,7 +210,7 @@ var/bomb_set
 	return
 
 obj/machinery/nuclearbomb/proc/nukehack_win(mob/user as mob)
-	var/dat as text
+	var/dat
 	dat += "<B>Nuclear Fission Explosive</B><BR>\nNuclear Device Wires:</A><HR>"
 	for(var/wire in src.wires)
 		dat += text("[wire] Wire: <A href='?src=\ref[src];wire=[wire];act=wire'>[src.wires[wire] ? "Mend" : "Cut"]</A> <A href='?src=\ref[src];wire=[wire];act=pulse'>Pulse</A><BR>")
@@ -384,7 +384,7 @@ obj/machinery/nuclearbomb/proc/nukehack_win(mob/user as mob)
 	safety = 1
 	if(!lighthack) icon_state = "nuclearbomb3"
 
-	EvacuationAuthority.trigger_self_destruct(list(z), src) //The round ends as soon as this happens, or it should.
+	SSevacuation.initiate_self_destruct(TRUE) //The round ends as soon as this happens, or it should.
 	return TRUE
 
 /obj/item/disk/nuclear/Destroy()

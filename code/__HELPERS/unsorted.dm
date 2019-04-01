@@ -267,48 +267,38 @@ Turf and target are seperate in case you want to teleport some distance from a t
 
 
 
-//This will update a mob's name, real_name, mind.name, data_core records, pda and id
-//Calling this proc without an oldname will only update the mob and skip updating the pda, id and records ~Carn
-/mob/proc/fully_replace_character_name(var/oldname,var/newname)
-	if(!newname)	return 0
+//This will update a mob's name, real_name, mind.name, GLOB.datacore records and id
+/mob/proc/fully_replace_character_name(oldname, newname)
+	if(!newname)
+		return FALSE
+
+	log_played_names(ckey, newname)
+
 	real_name = newname
 	name = newname
 	if(mind)
 		mind.name = newname
+		if(mind.key)
+			log_played_names(mind.key, newname) //Just in case the mind is unsynced at the moment.
 	if(dna)
 		dna.real_name = real_name
 
-	if(oldname)
-		//update the datacore records! This is goig to be a bit costly.
-		for(var/list/L in list(data_core.general,data_core.medical,data_core.security,data_core.locked))
-			for(var/datum/data/record/R in L)
-				if(R.fields["name"] == oldname)
-					R.fields["name"] = newname
-					break
+	return TRUE
 
-		//update our pda and id if we have them on our person
-		var/list/searching = GetAllContents(searchDepth = 3)
-		var/search_id = 1
-		var/search_pda = 1
 
-		for(var/A in searching)
-			if( search_id && istype(A,/obj/item/card/id) )
-				var/obj/item/card/id/ID = A
-				if(ID.registered_name == oldname)
-					ID.registered_name = newname
-					ID.name = "[newname]'s ID Card ([ID.assignment])"
-					if(!search_pda)	break
-					search_id = 0
+/mob/living/carbon/human/fully_replace_character_name(oldname, newname)
+	. = ..()
+	if(!.)
+		return FALSE
 
-			else if( search_pda && istype(A,/obj/item/device/pda) )
-				var/obj/item/device/pda/PDA = A
-				if(PDA.owner == oldname)
-					PDA.owner = newname
-					PDA.name = "PDA-[newname] ([PDA.ownjob])"
-					if(!search_id)	break
-					search_pda = 0
-	return 1
+	if(istype(wear_id))
+		var/obj/item/card/id/C = wear_id
+		C.update_label()
 
+	if(!GLOB.datacore.manifest_update(oldname, newname, job))
+		GLOB.datacore.manifest_inject(src)
+
+	return TRUE
 
 
 //Generalised helper proc for letting mobs rename themselves. Used to be clname() and ainame()
@@ -953,22 +943,37 @@ var/global/image/busy_indicator_hostile
 			else
 				air_master.tiles_to_update += T2*/
 
-proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
-	if(!original)
-		return null
 
-	var/obj/O = null
+/proc/DuplicateObject(atom/original, atom/newloc)
+	if(!original || !newloc)
+		return
 
-	if(sameloc)
-		O=new original.type(original.loc)
-	else
-		O=new original.type(locate(0,0,0))
+	var/atom/O = new original.type(newloc)
+	if(!O)
+		return
 
-	if(perfectcopy)
-		if((O) && (original))
-			for(var/V in original.vars)
-				if(!(V in list("type","loc","locs","vars", "parent", "parent_type","verbs","ckey","key")))
-					O.vars[V] = original.vars[V]
+	O.contents.Cut()
+
+	for(var/V in original.vars - GLOB.duplicate_forbidden_vars)
+		if(istype(original.vars[V], /datum)) // this would reference the original's object, that will break when it is used or deleted.
+			continue
+		else if(islist(original.vars[V]))
+			var/list/L = original.vars[V]
+			O.vars[V] = L.Copy()
+		else
+			O.vars[V] = original.vars[V]
+
+	for(var/atom/A in original.contents)
+		O.contents += new A.type
+
+	if(isobj(O))
+		var/obj/N = O
+
+		N.update_icon()
+		if(ismachinery(O))
+			var/obj/machinery/M = O
+			M.power_change()
+
 	return O
 
 
@@ -1052,7 +1057,7 @@ proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
 
 
 					for(var/obj/O in objs)
-						newobjs += DuplicateObject(O , 1)
+						newobjs += DuplicateObject(O, T)
 
 
 					for(var/obj/O in newobjs)
@@ -1064,7 +1069,7 @@ proc/DuplicateObject(obj/original, var/perfectcopy = 0 , var/sameloc = 0)
 						mobs += M
 
 					for(var/mob/M in mobs)
-						newmobs += DuplicateObject(M , 1)
+						newmobs += DuplicateObject(M, T)
 
 					for(var/mob/M in newmobs)
 						M.loc = X
@@ -1199,6 +1204,21 @@ proc/is_hot(obj/item/I)
 	if (!istype(I)) return 0
 	if (I.edge) return 1
 	return 0
+
+/proc/params2turf(scr_loc, turf/origin, client/C)
+	if(!scr_loc)
+		return null
+	var/tX = splittext(scr_loc, ",")
+	var/tY = splittext(tX[2], ":")
+	var/tZ = origin.z
+	tY = tY[1]
+	tX = splittext(tX[1], ":")
+	tX = tX[1]
+	var/list/actual_view = getviewsize(C ? C.view : world.view)
+	tX = CLAMP(origin.x + text2num(tX) - round(actual_view[1] / 2) - 1, 1, world.maxx)
+	tY = CLAMP(origin.y + text2num(tY) - round(actual_view[2] / 2) - 1, 1, world.maxy)
+	return locate(tX, tY, tZ)
+
 
 //Returns 1 if the given item is capable of popping things like balloons, inflatable barriers, or cutting police tape.
 /proc/can_puncture(obj/item/W)		// For the record, WHAT THE HELL IS THIS METHOD OF DOING IT?
@@ -1497,65 +1517,3 @@ proc/pick_closest_path(value, list/matches = get_fancy_list_of_atom_types())
 	else if(powerused < 1000000000) //Less than a GW
 		return "[round((powerused * 0.000001),0.001)] MW"
 	return "[round((powerused * 0.000000001),0.0001)] GW"
-
-//circlerange & co with applied shadow casting, like a FOV.
-//excess arguments are used on a conditional callback (e.g. CALLBACK(T, ./CanPass, start, T)).
-/proc/circle_casted_turfs(atom/start, radius = 3, inclusive = FALSE, angle_coeff = 1, thingtocall, proctocall, ...)
-	var/turf/center = get_turf(start)
-	if(!center)
-		return
-	var/custom_checks = length(args) < 5 ? FALSE : TRUE
-	var/perimeter = circle_turfs(center, radius)
-	var/diameter = radius * 2 + 1
-	var/y_axis = center.y - radius - 1
-	var/x_axis = center.x - radius - 1
-	var/list/grid[diameter][diameter]
-	grid[center.x - x_axis][center.y - y_axis] = center
-	for(var/I in perimeter)
-		var/turf/T = I
-		var/distance
-		var/castline = getline(center, T) - center
-		for(var/O in castline)
-			distance++
-			var/turf/IT = O
-			if(grid[IT.x - x_axis][IT.y - y_axis] == 0)
-				break
-			var/unobstacled
-			if(custom_checks)
-				var/object = thingtocall == CALLBACK_DUMMY ? IT : thingtocall
-				var/list/arguments = args.Copy(7)
-				for(var/A in arguments)
-					A = A == CALLBACK_DUMMY ? IT : A
-				var/datum/callback/conditions = CALLBACK(object, proctocall, arguments)
-				if(conditions.Invoke())
-					unobstacled = TRUE
-			else if(IT.CanPass(start, IT))
-				unobstacled = TRUE
-			if(unobstacled)
-				var/x = IT.x - x_axis
-				var/y = IT.y - y_axis
-				grid[x][y] = T
-				continue
-			var/bisector = Get_Angle(center, T)
-			var/shadow_angle = 90 * (distance/radius) * angle_coeff
-			var/sections = round(radius/distance * angle_coeff)
-			var/ray = SIMPLIFY_DEGREES(bisector - shadow_angle)
-			var/turf/corner = get_turf_in_angle(ray, center, radius)
-			for(var/C in getline(IT, corner) - IT)
-				var/turf/ST = C
-				grid[ST.x - x_axis][ST.y - y_axis] = 0
-			var/corner_ray = Get_Angle(IT, corner)
-			var/section_ray = closer_angle_difference(corner_ray, bisector)/sections * 2
-			for(var/i = 1 to sections)
-				corner_ray = SIMPLIFY_DEGREES(corner_ray - section_ray)
-				for(var/C in getline(IT, corner_ray) - IT)
-					var/turf/ST = C
-					grid[ST.x - x_axis][ST.y - y_axis] = 0
-	var/list/turfs = list()
-	for(var/x = 1 to diameter)
-		for(var/y in grid[x])
-			if(!y)
-				continue
-			turfs += grid[x][y]
-	return turfs
-

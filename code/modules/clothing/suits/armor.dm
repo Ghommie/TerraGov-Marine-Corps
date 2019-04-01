@@ -4,8 +4,8 @@
 	flags_armor_protection = CHEST|GROIN
 	flags_cold_protection = CHEST|GROIN
 	flags_heat_protection = CHEST|GROIN
-	min_cold_protection_temperature = ARMOR_min_cold_protection_temperature
-	max_heat_protection_temperature = ARMOR_max_heat_protection_temperature
+	min_cold_protection_temperature = ARMOR_MIN_COLD_PROTECTION_TEMPERATURE
+	max_heat_protection_temperature = ARMOR_MAX_HEAT_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.6
 	w_class = 5
 	allowed = list(/obj/item/weapon/gun)//Guns only.
@@ -51,9 +51,6 @@
 		/obj/item/storage/large_holster/machete,
 		/obj/item/storage/belt/gun/m4a3,
 		/obj/item/storage/belt/gun/m44)
-	New()
-		select_gamemode_skin(/obj/item/clothing/suit/armor/vest/pilot)
-		..()
 
 /obj/item/clothing/suit/armor/vest/dutch
 	name = "armored jacket"
@@ -143,7 +140,7 @@
 	flags_inventory = BLOCKSHARPOBJ|NOPRESSUREDMAGE
 	flags_inv_hide = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT
 	flags_cold_protection = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
-	min_cold_protection_temperature = SPACE_SUIT_min_cold_protection_temperature
+	min_cold_protection_temperature = SPACE_SUIT_MIN_COLD_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0.6
 
 
@@ -224,7 +221,7 @@
 	flags_inventory = NOFLAGS
 	flags_inv_hide = HIDEGLOVES|HIDESHOES|HIDEJUMPSUIT
 	flags_cold_protection = CHEST|GROIN|LEGS|FEET|ARMS|HANDS
-	min_cold_protection_temperature = SPACE_SUIT_min_cold_protection_temperature
+	min_cold_protection_temperature = SPACE_SUIT_MIN_COLD_PROTECTION_TEMPERATURE
 	siemens_coefficient = 0
 
 /obj/item/clothing/suit/armor/heavy

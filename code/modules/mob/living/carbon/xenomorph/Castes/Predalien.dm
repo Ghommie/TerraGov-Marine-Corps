@@ -9,7 +9,7 @@
 	// *** Melee Attacks *** //
 	melee_damage_lower = 65
 	melee_damage_upper = 80
-	attack_delay = -2 //Bonus or pen to time in between attacks. + makes slashes slower.
+	attack_delay = 6
 
 	// *** Tackle *** //
 	tackle_damage = 50 //How much HALLOSS damage a xeno deals when tackling
@@ -39,9 +39,9 @@
 	charge_type = 4
 	pounce_delay = 4 SECONDS
 
-/datum/xeno_caste/predalien/handle_decay(mob/living/carbon/Xenomorph/X)
+/mob/living/carbon/Xenomorph/Predalien/handle_decay()
 	if(prob(20))
-		X.use_plasma(min(rand(1,2), X.plasma_stored))
+		use_plasma(min(rand(1,2), plasma_stored))
 
 /mob/living/carbon/Xenomorph/Predalien
 	caste_base_type = /mob/living/carbon/Xenomorph/Predalien
@@ -84,17 +84,6 @@
 		announce_spawn()
 
 /mob/living/carbon/Xenomorph/Predalien/proc/announce_spawn()
-	set waitfor = 0
-	sleep(30)
-	if(!loc) return FALSE
-	if(length(SSticker?.mode?.predators))
-		var/datum/mind/M
-		for(var/i in SSticker.mode.predators)
-			M = i
-			if(M.current && M.current.stat != DEAD)
-				to_chat(M.current, "<span class='event_announcement'>An abomination to your people has been brought onto the world at [get_area(src)]! Hunt it down and destroy it!</span>")
-				M.current.emote("roar")
-
 	to_chat(src,  {"
 <span class='role_body'>|______________________|</span>
 <span class='role_header'>You are a predator-alien hybrid!</span>
