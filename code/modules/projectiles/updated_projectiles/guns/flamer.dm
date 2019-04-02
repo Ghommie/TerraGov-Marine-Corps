@@ -485,7 +485,7 @@
 		if(istype(T,/turf/open/space))
 			continue
 		var/decay = decay_coeff * sqrt(get_dist_euclidian(src, T)) * radius_squared
-		new /obj/flamer_fire(T, round(fire_lvl ** decay), round(burn_lvl ** decay), stack = round(stack ** decay), round(init_dmg ** decay), intensity_var, duration_var, decay_coeff, f_color)
+		new /obj/flamer_fire(T, round(fire_lvl ** decay), round(burn_lvl ** decay), 0, round(stack ** decay), round(init_dmg ** decay), intensity_var, duration_var, decay_coeff, f_color)
 
 /obj/flamer_fire/Destroy()
 	SetLuminosity(0)
