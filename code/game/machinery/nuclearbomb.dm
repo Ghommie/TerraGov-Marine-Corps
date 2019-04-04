@@ -228,7 +228,7 @@ obj/machinery/nuclearbomb/proc/nukehack_win(mob/user as mob)
 	set name = "Make Deployable"
 	set src in oview(1)
 
-	if (!usr.canmove || usr.stat || usr.is_mob_restrained())
+	if (!usr.canmove || usr.stat || usr.restrained())
 		return
 	if (!ishuman(usr))
 		to_chat(usr, "<span class='warning'>You don't have the dexterity to do this!</span>")
@@ -245,7 +245,7 @@ obj/machinery/nuclearbomb/proc/nukehack_win(mob/user as mob)
 
 /obj/machinery/nuclearbomb/Topic(href, href_list)
 	..()
-	if (!usr.canmove || usr.stat || usr.is_mob_restrained())
+	if (!usr.canmove || usr.stat || usr.restrained())
 		return
 	if ((usr.contents.Find(src) || (in_range(src, usr) && istype(src.loc, /turf))))
 		usr.set_interaction(src)
@@ -386,10 +386,3 @@ obj/machinery/nuclearbomb/proc/nukehack_win(mob/user as mob)
 
 	SSevacuation.initiate_self_destruct(TRUE) //The round ends as soon as this happens, or it should.
 	return TRUE
-
-/obj/item/disk/nuclear/Destroy()
-	if(GLOB.yautja_teleport_loc.len > 0)
-		var/obj/D = new /obj/item/disk/nuclear(pick(GLOB.yautja_teleport_loc))
-		message_admins("[src] has been destroyed. Spawning [D] at [AREACOORD(D.loc)].")
-		log_game("[src] has been destroyed. Spawning [D] at [ADMIN_VERBOSEJMP(D.loc)].")
-	. = ..()

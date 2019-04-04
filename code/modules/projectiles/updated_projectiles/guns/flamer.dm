@@ -261,7 +261,7 @@
 			if(istype(H.wear_suit, /obj/item/clothing/suit/fire) || (istype(H.wear_suit, /obj/item/clothing/suit/storage/marine/M35) && istype(H.head, /obj/item/clothing/head/helmet/marine/pyro)))
 				continue
 
-		var/armor_block = M.run_armor_check(null, "energy")
+		var/armor_block = M.run_armor_check(null, "fire")
 		if(ishuman(M))
 			var/mob/living/carbon/human/H = M
 			if(istype(H.wear_suit, /obj/item/clothing/suit/fire) || (istype(H.wear_suit, /obj/item/clothing/suit/storage/marine/M35) && istype(H.head, /obj/item/clothing/head/helmet/marine/pyro)))
@@ -500,7 +500,7 @@
 
 /mob/living/carbon/human/run_armor_check(def_zone = null, attack_flag = "melee")
 	. = ..()
-	if(attack_flag == "energy")
+	if(attack_flag == "fire")
 		if(istype(wear_suit, /obj/item/clothing/suit/fire) || (istype(wear_suit, /obj/item/clothing/suit/storage/marine/M35) && istype(head, /obj/item/clothing/head/helmet/marine/pyro)))
 			return CLAMP(. * 1.5, 0.75, 1) //Min 75% resist, max 100%
 
@@ -511,7 +511,7 @@
 	adjust_fire_stacks(stack)
 	if (prob(fire_stacks * 4 + power * 2))
 		IgniteMob()
-	var/armor_block = run_armor_check(null, "energy")
+	var/armor_block = run_armor_check(null, "fire")
 	apply_damage(round(power * fire_mod), BURN, null, armor_block)
 	if(prob(40 + power) && !crossed)
 		to_chat(src, "<span class='danger'>The fire! It burns!</span>")
@@ -522,7 +522,7 @@
 
 /mob/living/carbon/human/flamer_fire_act(power, stack, fire_mod = 1, crossed = FALSE)
 	if(istype(wear_suit, /obj/item/clothing/suit/storage/marine/M35) && istype(shoes, /obj/item/clothing/shoes/marine/pyro) && istype(head, /obj/item/clothing/head/helmet/marine/pyro))
-		var/armor_block = run_armor_check(null, "energy")
+		var/armor_block = run_armor_check(null, "fire")
 		apply_damage(round(power * 0.2) * fire_mod, BURN, null, armor_block)
 		if(prob(40) && !crossed)
 			to_chat(src, "<span class='warning'>Your suit protects you from most of the flames.</span>")
