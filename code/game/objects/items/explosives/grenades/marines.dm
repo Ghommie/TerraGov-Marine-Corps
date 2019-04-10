@@ -308,7 +308,7 @@
 	active = TRUE
 	force = 5
 	throwforce = 10
-	igniting = TRUE
+	ENABLE_BITFIELD(resistance_flags, ON_FIRE)
 	item_fire_stacks = 5
 	heat_source = 1500
 	damtype = "fire"
@@ -340,7 +340,7 @@
 	update_brightness()
 	force = 5
 	throwforce = 10
-	igniting = TRUE
+	ENABLE_BITFIELD(resistance_flags, ON_FIRE)
 	item_fire_stacks = 5
 	damtype = "fire"
 	START_PROCESSING(SSobj, src)
@@ -383,6 +383,6 @@
 		var/target_zone = check_zone(L.zone_selected)
 		if(!target_zone || rand(40))
 			target_zone = "chest"
-		var/armor_block = L.run_armor_check(target_zone, "fire")
-		if(launched && igniting)
+		if(launched && CHECK_BITFIELD(resistance_flags, ON_FIRE))
+			var/armor_block = L.run_armor_check(target_zone, "fire")
 			L.apply_damage(rand(throwforce*0.75,throwforce*1.25), BURN, target_zone, armor_block) //Do more damage if launched from a proper launcher and active

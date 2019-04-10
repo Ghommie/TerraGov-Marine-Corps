@@ -93,7 +93,7 @@
 	var/tierthrees
 
 	if(new_caste_type == /mob/living/carbon/Xenomorph/Queen) //Special case for dealing with queenae
-		if(jobban_isbanned(src, "Queen"))
+		if(is_banned_from(ckey, ROLE_XENO_QUEEN) || jobban_isbanned(src, ROLE_XENO_QUEEN))
 			to_chat(src, "<span class='warning'>You are jobbanned from the Queen role.</span>")
 			return
 		if(xeno_caste.hardcore)
@@ -110,6 +110,9 @@
 		if(hivenumber == XENO_HIVE_NORMAL && SSticker?.mode && hive.xeno_queen_timer)
 			to_chat(src, "<span class='warning'>You must wait about [round(hive.xeno_queen_timer / 60)] minutes for the hive to recover from the previous Queen's death.<span>")
 			return
+
+		if(mind)
+			mind.assigned_role = ROLE_XENO_QUEEN
 
 		switch(hivenumber) // because it causes issues otherwise
 			if(XENO_HIVE_CORRUPTED)
@@ -162,18 +165,21 @@
 	tiertwos = length(hive.xenos_by_tier[XENO_TIER_TWO])
 	tierthrees = length(hive.xenos_by_tier[XENO_TIER_THREE])
 
-	if((tier == XENO_TIER_ONE && TO_XENO_TIER_2_FORMULA(tierones, tiertwos, tierthrees))
-		to_chat(src, "<span class='warning'>Another sister evolved meanwhile. The hive cannot support another Tier 2.</span>")
-		return
-	else if(tier == XENO_TIER_TWO && TO_XENO_TIER_3_FORMULA(tierones, tiertwos, tierthrees))
-		to_chat(src, "<span class='warning'>Another sister evolved meanwhile. The hive cannot support another Tier 3.</span>")
-		return
+	if(new_caste_type == /mob/living/carbon/Xenomorph/Queen)
+		if(hive.living_xeno_queen) //Do another check after the tick.
+			to_chat(src, "<span class='warning'>There already is a Queen.</span>")
+			return
+	else // these shouldnt be checked if trying to become a queen.
+		if((tier == XENO_TIER_ONE && TO_XENO_TIER_2_FORMULA(tierones, tiertwos, tierthrees))
+			to_chat(src, "<span class='warning'>Another sister evolved meanwhile. The hive cannot support another Tier 2.</span>")
+			return
+		else if(tier == XENO_TIER_TWO && TO_XENO_TIER_3_FORMULA(tierones, tiertwos, tierthrees))
+			to_chat(src, "<span class='warning'>Another sister evolved meanwhile. The hive cannot support another Tier 3.</span>")
+			return
 
 	if(!isturf(loc)) //cdel'd or moved into something
 		return
-	if(new_caste_type == /mob/living/carbon/Xenomorph/Queen && hive.living_xeno_queen) //Do another check after the tick.
-		to_chat(src, "<span class='warning'>There already is a Queen.</span>")
-		return
+
 
 	//From there, the new xeno exists, hopefully
 	var/mob/living/carbon/Xenomorph/new_xeno = new new_caste_type(get_turf(src))
