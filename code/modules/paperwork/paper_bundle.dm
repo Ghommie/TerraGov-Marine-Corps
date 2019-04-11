@@ -1,7 +1,7 @@
 /obj/item/paper_bundle
 	name = "paper bundle"
 	gender = PLURAL
-	icon = 'icons/obj/items/paper.dmi'
+	icon = 'icons/obj/items/bureaucracy.dmi'
 	icon_state = "paper"
 	item_state = "paper"
 	throwforce = 0
@@ -196,7 +196,7 @@
 	var/i = 0
 	var/photo
 	for(var/obj/O in src)
-		var/image/IMG = image('icons/obj/items/paper.dmi')
+		var/image/IMG = image('icons/obj/items/bureaucracy.dmi')
 		if(istype(O, /obj/item/paper))
 			IMG.icon_state = O.icon_state
 			IMG.pixel_x -= min(1*i, 2)
@@ -216,7 +216,7 @@
 		desc = "A single sheet of paper."
 	if(photo)
 		desc += "\nThere is a photo attached to it."
-	overlays += image('icons/obj/items/paper.dmi', "clip")
+	overlays += image('icons/obj/items/bureaucracy.dmi', "clip")
 
 /obj/item/paper_bundle/proc/attach_doc(obj/item/I, mob/living/user, no_message)
 	if(I.loc == user)

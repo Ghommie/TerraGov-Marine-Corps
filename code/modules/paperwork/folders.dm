@@ -1,7 +1,7 @@
 /obj/item/folder
 	name = "folder"
 	desc = "A folder."
-	icon = 'icons/obj/items/paper.dmi'
+	icon = 'icons/obj/items/bureaucracy.dmi'
 	icon_state = "folder"
 	w_class = 2
 	var/updateicon = 0//If they spawn with premade papers, update icon

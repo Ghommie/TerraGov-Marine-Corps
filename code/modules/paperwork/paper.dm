@@ -6,7 +6,7 @@
 /obj/item/paper
 	name = "paper"
 	gender = PLURAL
-	icon = 'icons/obj/items/paper.dmi'
+	icon = 'icons/obj/items/bureaucracy.dmi'
 	icon_state = "paper"
 	item_state = "paper"
 	throwforce = 0
@@ -376,7 +376,7 @@
 
 		stamps += (stamps=="" ? "<HR>" : "<BR>") + "<i>This paper has been stamped with the [P.name].</i>"
 
-		var/image/stampoverlay = image('icons/obj/items/paper.dmi')
+		var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
 		var/x
 		var/y
 		if(istype(P, /obj/item/tool/stamp/captain) || istype(P, /obj/item/tool/stamp/centcomm))
@@ -523,7 +523,7 @@ then, for every time you included a field, increment fields. */
 		return
 	var/stamptag = A ? "[A.icon_state][color]" : "[stamp][color]"
 	if(color && !S.sprites[stamptag])
-		var/icon/I = icon(A ? A.icon : "/html/images/[stamp].png", A ? A.icon_state : "", SOUTH)
+		var/icon/I = icon(A ? A.icon : "icons/paperwork_icons/[stamp].png", A ? A.icon_state : "", SOUTH)
 		I.Blend(rgb(color, color, color), ICON_ADD)
 		var/key = "[generate_asset_name(I)].png"
 		register_asset(key, I)

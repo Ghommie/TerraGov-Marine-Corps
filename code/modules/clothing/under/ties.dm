@@ -202,7 +202,7 @@
 /obj/item/clothing/tie/medal/letter/commendation
 	name = "letter of commendation"
 	desc = "A letter printed on cardstock often filled with praise for the person it is intended for."
-	icon = 'icons/obj/items/paper.dmi'
+	icon = 'icons/obj/items/bureaucracy.dmi'
 	icon_state = "commendation"
 
 //Armbands
@@ -509,9 +509,9 @@
 /obj/item/storage/internal/tie/white_vest
 	storage_slots = 8
 	can_hold = list(
-		/obj/item/tool/surgery, 
-		/obj/item/stack/medical/advanced/bruise_pack, 
-		/obj/item/stack/medical/advanced/ointment, 
+		/obj/item/tool/surgery,
+		/obj/item/stack/medical/advanced/bruise_pack,
+		/obj/item/stack/medical/advanced/ointment,
 		/obj/item/stack/nanopaste)
 
 /obj/item/clothing/tie/storage/knifeharness

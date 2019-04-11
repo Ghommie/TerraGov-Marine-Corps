@@ -365,7 +365,7 @@ log transactions
 					R.info += "<i>Service terminal ID:</i> [machine_id]<br>"
 
 					//stamp the paper
-					var/image/stampoverlay = image('icons/obj/items/paper.dmi')
+					var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
 					stampoverlay.icon_state = "paper_stamp-cent"
 					if(!R.stamped)
 						R.stamped = new
@@ -407,7 +407,7 @@ log transactions
 					R.info += "</table>"
 
 					//stamp the paper
-					var/image/stampoverlay = image('icons/obj/items/paper.dmi')
+					var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
 					stampoverlay.icon_state = "paper_stamp-cent"
 					if(!R.stamped)
 						R.stamped = new
