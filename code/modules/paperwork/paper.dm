@@ -510,3 +510,22 @@ then, for every time you included a field, increment fields. */
 
 /obj/item/paper/crumpled/bloody/csheet
 	info = "<b>Character Sheet</b>\n\nKorbath the Barbarian\nLevel 6 Barbarian\nHitpoints: 47/93\nSTR: 18\nDEX: 14\nCON: 16\nINT: 8\nWIS: 11\nCHA: 15\n\n<B>Inventory:</b>\nGreatsword +3 \nChain M--\n\n\nThe rest of the page is covered in smears of blood."
+
+
+/////////// WIP /////////
+
+/obj/item/paper/proc/add_stamp(stamp, color, sheet)
+	var/datum/asset/spritesheet/S = sheet ? sheet : get_asset_datum(/datum/asset/spritesheet/simple/paper)
+	var/atom/A
+	if(isatom(stamp))
+		A = stamp
+	else if (!color || !istext(stamp))
+		return
+	var/stamptag = A ? "[A.icon_state][color]" : "[stamp][color]"
+	if(color && !S.sprites[stamptag])
+		var/icon/I = icon(A ? A.icon : "/html/images/[stamp].png", A ? A.icon_state : "", SOUTH)
+		I.Blend(rgb(color, color, color), ICON_ADD)
+		var/key = "[generate_asset_name(I)].png"
+		register_asset(key, I)
+		S.Insert(color, I)
+	return S.icon_tag(color ? stamptag : A.icon_state)
