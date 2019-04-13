@@ -760,7 +760,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 /obj/item/newspaper
 	name = "newspaper"
 	desc = "An issue of The Griffon, the newspaper circulating aboard Nanotrasen Space Stations."
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "newspaper"
 	w_class = 1	//Let's make it fit in trashbags!
 	attack_verb = list("bapped")

@@ -1,6 +1,6 @@
 /obj/item/tool/hand_labeler
 	name = "hand labeler"
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "labeler0"
 	item_state = "flight"
 
@@ -71,7 +71,7 @@
 /obj/item/tool/pen
 	desc = "It's a normal black ink pen."
 	name = "pen"
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "pen"
 	item_state = "pen"
 	flags_equip_slot = ITEM_SLOT_BELT|ITEM_SLOT_EARS
@@ -173,7 +173,7 @@
 /obj/item/tool/stamp
 	name = "rubber stamp"
 	desc = "A rubber stamp for stamping important documents."
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "stamp-qm"
 	item_state = "stamp"
 	throwforce = 0

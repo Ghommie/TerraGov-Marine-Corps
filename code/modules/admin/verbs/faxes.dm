@@ -59,7 +59,7 @@ GLOBAL_LIST_EMPTY(faxes)
 		P.update_icon()
 
 		if(admin)
-			var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
+			var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
 			stampoverlay.icon_state = "paper_stamp-uscm"
 			if(!P.stamped)
 				P.stamped = new

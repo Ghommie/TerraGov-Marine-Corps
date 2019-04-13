@@ -46,7 +46,7 @@
 
 
 		//stamp the paper
-		var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
+		var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
 		stampoverlay.icon_state = "paper_stamp-cent"
 		if(!R.stamped)
 			R.stamped = new
@@ -69,7 +69,7 @@
 	R.info += "<b>Do not lose or misplace this code.</b><br>"
 
 	//stamp the paper
-	var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
+	var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
 	stampoverlay.icon_state = "paper_stamp-cent"
 	if(!R.stamped)
 		R.stamped = new

@@ -202,7 +202,7 @@
 /obj/item/clothing/tie/medal/letter/commendation
 	name = "letter of commendation"
 	desc = "A letter printed on cardstock often filled with praise for the person it is intended for."
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "commendation"
 
 //Armbands

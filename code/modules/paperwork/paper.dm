@@ -6,7 +6,7 @@
 /obj/item/paper
 	name = "paper"
 	gender = PLURAL
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "paper"
 	item_state = "paper"
 	throwforce = 0
@@ -376,7 +376,7 @@
 
 		stamps += (stamps=="" ? "<HR>" : "<BR>") + "<i>This paper has been stamped with the [P.name].</i>"
 
-		var/image/stampoverlay = image('icons/obj/items/bureaucracy.dmi')
+		var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
 		var/x
 		var/y
 		if(istype(P, /obj/item/tool/stamp/captain) || istype(P, /obj/item/tool/stamp/centcomm))

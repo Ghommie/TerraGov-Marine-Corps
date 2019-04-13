@@ -63,5 +63,21 @@
 	name = "centcomm rubber stamp"
 	icon_state = "stamp-cent"
 
+/obj/item/tool/stamp/tgmc
+	name = "\improper TGMC rubber stamp"
+	desc = "A sturdy, adorned rubber stamp for stamping very important documents."
+	icon_state = "stamp-tgmc"
+	force = 5
+	throwforce = 6
+	hitsound = 'sound/weapons/bladeslice.ogg'
+
+/obj/item/tool/stamp/ro
+	name = "requisition officer's rubber stamp
+	icon_state = "stamp-ro"
+
+/obj/item/tool/stamp/mp
+	name = "chief master at arms' rubber stamp"
+	icon_state = "stamp-mp"
+
 /obj/item/stamp/attack_paw(mob/user)
 	return attack_hand(user)

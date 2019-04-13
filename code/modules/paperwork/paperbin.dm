@@ -1,6 +1,6 @@
 /obj/item/paper_bin
 	name = "paper bin"
-	icon = 'icons/obj/items/bureaucracy.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "paper_bin1"
 	item_state = "sheet-metal"
 	throwforce = 1
