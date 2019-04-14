@@ -72,7 +72,7 @@
 	hitsound = 'sound/weapons/bladeslice.ogg'
 
 /obj/item/tool/stamp/ro
-	name = "requisition officer's rubber stamp
+	name = "requisition officer's rubber stamp"
 	icon_state = "stamp-ro"
 
 /obj/item/tool/stamp/mp

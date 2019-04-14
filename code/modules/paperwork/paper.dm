@@ -527,5 +527,5 @@ then, for every time you included a field, increment fields. */
 		I.Blend(rgb(color, color, color), ICON_ADD)
 		var/key = "[generate_asset_name(I)].png"
 		register_asset(key, I)
-		S.Insert(color, I)
+		S.Insert(stamptag, I)
 	return S.icon_tag(color ? stamptag : A.icon_state)
