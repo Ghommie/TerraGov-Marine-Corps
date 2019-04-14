@@ -65,3 +65,15 @@ var/global/TAB = "&nbsp;&nbsp;&nbsp;&nbsp;"
 
 #define AREASELECT_CORNERA "corner A"
 #define AREASELECT_CORNERB "corner B"
+
+
+//FONTS:
+// Used by Paper and PhotoCopier (and PaperBin once a year).
+// Used by PDA's Notekeeper.
+// Used by NewsCaster and NewsPaper.
+// Used by Modular Computers
+#define PEN_FONT "Verdana"
+#define FOUNTAIN_PEN_FONT "Segoe Script"
+#define CRAYON_FONT "Comic Sans MS"
+#define PRINTER_FONT "Times New Roman"
+#define SIGNFONT "Times New Roman"

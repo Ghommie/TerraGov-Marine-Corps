@@ -175,6 +175,8 @@
 /mob/dead/observer/can_use_hands()
 	return FALSE
 
+/mob/dead/observer/is_literate()
+	return TRUE
 
 /mob/dead/observer/Stat()
 	. = ..()
@@ -256,8 +258,8 @@
 			ghost_orderhud ? H.add_hud_to(src) : H.remove_hud_from(src)
 			client.prefs.ghost_hud ^= GHOST_HUD_ORDER
 			client.prefs.save_preferences()
-			to_chat(src, "<span class='boldnotice'>[hud_choice] [ghost_orderhud ? "Enabled" : "Disabled"]</span>")			
-		
+			to_chat(src, "<span class='boldnotice'>[hud_choice] [ghost_orderhud ? "Enabled" : "Disabled"]</span>")
+
 
 
 /mob/dead/observer/verb/teleport(var/area/A in return_sorted_areas())

@@ -730,6 +730,18 @@ mob/proc/yank_out_object()
 /mob/proc/can_inject()
 	return reagents
 
+/mob/proc/is_literate()
+	return FALSE
+
+/mob/proc/can_read(obj/O)
+	if(is_blind(src))
+		to_chat(src, "<span class='warning'>As you are trying to read [O], you suddenly feel very stupid!</span>")
+		return
+	if(!is_literate())
+		to_chat(src, "<span class='notice'>You try to read [O], but can't comprehend any of it.</span>")
+		return
+	return TRUE
+
 /mob/proc/get_idcard(hand_first)
 	return
 

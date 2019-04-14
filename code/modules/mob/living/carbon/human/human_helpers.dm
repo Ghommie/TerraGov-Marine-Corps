@@ -182,6 +182,8 @@
  		// Might need re-wording.
 		to_chat(user, "<span class='alert'>There is no exposed flesh or thin material [target_zone == "head" ? "on their head" : "on their body"] to inject into.</span>")
 
+/mob/living/carbon/human/is_literate()
+	return TRUE
 
 /mob/living/carbon/human/has_brain()
 	if(internal_organs_by_name["brain"])

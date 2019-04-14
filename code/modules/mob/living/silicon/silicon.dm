@@ -143,6 +143,8 @@
 		to_chat(user, "<span class='alert'>The armoured plating is too tough.</span>")
 	return FALSE
 
+/mob/living/silicon/is_literate()
+	return TRUE
 
 //Silicon mob language procs
 

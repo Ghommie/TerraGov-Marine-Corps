@@ -366,6 +366,9 @@
 /mob/living/carbon/monkey/IsAdvancedToolUser()//Unless its monkey mode monkeys cant use advanced tools
 	return universal_speak
 
+/mob/living/carbon/human/is_literate()
+	return IsAdvancedToolUser()
+
 /mob/living/carbon/monkey/say(var/message, var/datum/language/speaking = null, var/verb="says", var/alt_name="", var/italics=0, var/message_range = world.view, var/list/used_radios = list())
         if(stat)
                 return
