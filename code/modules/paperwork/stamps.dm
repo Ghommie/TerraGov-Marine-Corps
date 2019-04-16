@@ -1,8 +1,8 @@
 /obj/item/stamp
-	name = "\improper GRANTED rubber stamp"
+	name = "generic rubber stamp"
 	desc = "A rubber stamp for stamping important documents."
 	icon = 'icons/obj/bureaucracy.dmi'
-	icon_state = "stamp-ok"
+	icon_state = "stamp-generic"
 	item_state = "stamp"
 	throwforce = 0
 	w_class = WEIGHT_CLASS_TINY
@@ -10,10 +10,16 @@
 	throw_range = 7
 	matter = list("metal" = 60)
 	attack_verb = list("stamped")
+	var/stamp_flags = STAMP_RECTANGULAR
 
 /obj/item/stamp/suicide_act(mob/user)
 	user.visible_message("<span class='suicide'>[user] stamps 'VOID' on [user.p_their()] forehead, then promptly falls over, dead.</span>")
 	return (OXYLOSS)
+
+/obj/item/stamp/ok
+	name = "\improper GRANTED rubber stamp"
+	icon_state = "stamp-ok"
+	stamp_flags = STAMP_RECTANGULAR|STAMP_GRANTED
 
 /obj/item/stamp/qm
 	name = "quartermaster's rubber stamp"
@@ -26,6 +32,7 @@
 /obj/item/stamp/captain
 	name = "captain's rubber stamp"
 	icon_state = "stamp-cap"
+	stamp_flags = STAMP_CIRCULAR
 
 /obj/item/stamp/hop
 	name = "head of personnel's rubber stamp"
@@ -50,6 +57,7 @@
 /obj/item/stamp/denied
 	name = "\improper DENIED rubber stamp"
 	icon_state = "stamp-deny"
+	stamp_flags = STAMP_RECTANGULAR|STAMP_DENIED
 
 /obj/item/stamp/clown
 	name = "clown's rubber stamp"
@@ -62,6 +70,7 @@
 /obj/item/tool/stamp/centcomm
 	name = "centcomm rubber stamp"
 	icon_state = "stamp-cent"
+	stamp_flags = STAMP_CIRCULAR
 
 /obj/item/tool/stamp/tgmc
 	name = "\improper TGMC rubber stamp"
@@ -70,6 +79,7 @@
 	force = 5
 	throwforce = 6
 	hitsound = 'sound/weapons/bladeslice.ogg'
+	stamp_flags = STAMP_CIRCULAR|STAMP_SPECIAL
 
 /obj/item/tool/stamp/ro
 	name = "requisition officer's rubber stamp"
