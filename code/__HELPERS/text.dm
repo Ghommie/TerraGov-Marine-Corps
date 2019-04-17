@@ -600,7 +600,7 @@ proc/TextPreview(var/string,var/len=40)
 	var/style = limited ? "crayon_" : "outline_"
 	t = replacetext(t, regex("%(nt|nanotrasen)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]nt", color)]")
 	t = replacetext(t, regex("%(zippy|pizza|zippypizza)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]pizza", color)]")
-	t = replacetext(t, regex("%(.*)?logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]tgmc", color)]")
+	t = replacetext(t, regex("%(tgmc)?logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]tgmc", color)]")
 
 	return t
 

@@ -3,6 +3,7 @@
  *		Filing Cabinets
  *		Security Record Cabinets
  *		Medical Record Cabinets
+ *		Employment Contract Cabinets
  */
 
 
@@ -12,27 +13,48 @@
 /obj/structure/filingcabinet
 	name = "filing cabinet"
 	desc = "A large cabinet with drawers."
-	icon = 'icons/obj/structures/misc.dmi'
+	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "filingcabinet"
-	density = 1
-	anchored = 1
-
+	density = TRUE
+	anchored = TRUE
 
 /obj/structure/filingcabinet/chestdrawer
 	name = "chest drawer"
 	icon_state = "chestdrawer"
 
+/obj/structure/filingcabinet/chestdrawer/wheeled
+	name = "rolling chest drawer"
+	desc = "A small cabinet with drawers. This one has wheels!"
+	anchored = FALSE
 
-/obj/structure/filingcabinet/filingcabinet	//not changing the path to avoid unecessary map issues, but please don't name stuff like this in the future -Pete
+/obj/structure/filingcabinet/tall
 	icon_state = "tallcabinet"
 
+/obj/structure/filingcabinet/wall
+	name = "wall-mounted filing cabinet"
+	desc = "A filing cabinet installed into a cavity in the wall to save space. Wow!"
+	icon = 'icons/obj/wallframes.dmi'
+	icon_state = "wallcabinet"
+	density = FALSE
 
-/obj/structure/filingcabinet/Initialize()
+/obj/structure/filingcabinet/Initialize(mapload)
 	. = ..()
-	for(var/obj/item/I in loc)
-		if(istype(I, /obj/item/paper) || istype(I, /obj/item/folder) || istype(I, /obj/item/photo) || istype(I, /obj/item/paper_bundle))
-			I.loc = src
+	if(mapload)
+		for(var/obj/item/I in loc)
+			if(istype(I, /obj/item/paper) || istype(I, /obj/item/folder) || istype(I, /obj/item/photo))
+				I.forceMove(src)
 
+/obj/structure/filingcabinet/wall/Initialize(mapload)
+	. = ..()
+	switch(dir)
+		if(NORTH)
+			pixel_y = -32
+		if(SOUTH)
+			pixel_y = 32
+		if(EAST)
+			pixel_x = -32
+		if(WEST)
+			pixel_x = 32
 
 /obj/structure/filingcabinet/attackby(obj/item/P as obj, mob/user as mob)
 	if(istype(P, /obj/item/paper) || istype(P, /obj/item/folder) || istype(P, /obj/item/photo) || istype(P, /obj/item/paper_bundle))

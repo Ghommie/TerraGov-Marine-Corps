@@ -2,48 +2,31 @@
 	name = "paper"
 	icon_state = "paper_stack"
 	item_state = "paper"
-	var/copied = 0
-	var/iscopy = 0
-
+	var/copied = FALSE
+	var/iscopy = FALSE
 
 /obj/item/paper/carbon/update_icon()
-	if(iscopy)
-		if(info)
-			icon_state = "cpaper_words"
-			return
-		icon_state = "cpaper"
-	else if (copied)
-		if(info)
-			icon_state = "paper_words"
-			return
-		icon_state = "paper"
-	else
-		if(info)
-			icon_state = "paper_stack_words"
-			return
-		icon_state = "paper_stack"
-
-
+	icon_state = iscopy ? "cpaper" : copied ? "paper" : "paper_stack"
+	if(info)
+		icon_state += "_words"
 
 /obj/item/paper/carbon/verb/removecopy()
 	set name = "Remove carbon-copy"
 	set category = "Object"
 	set src in usr
 
-	if (copied == 0)
+	if (!copied)
 		var/obj/item/paper/carbon/c = src
 		var/copycontents = html_decode(c.info)
 		var/obj/item/paper/carbon/copy = new /obj/item/paper/carbon (usr.loc)
-		copycontents = oldreplacetext(copycontents, "<font face=\"[c.deffont]\" color=", "<font face=\"[c.deffont]\" nocolor=")	//state of the art techniques in action
-		copycontents = oldreplacetext(copycontents, "<font face=\"[c.crayonfont]\" color=", "<font face=\"[c.crayonfont]\" nocolor=")	//This basically just breaks the existing color tag, which we need to do because the innermost tag takes priority.
-		copy.info += copycontents
-		copy.info += "</font>"
-		copy.name = "Copy - " + c.name
+		copycontents = replacetext(copycontents, regex("(?=<font face=\"(\\w*|\\s*)\"\\s)color=\"(\\w*|\\s*)\""), "")	//breaks the existing color tag, since we need to retain the innermost tag. Now regex flavored.
+		copy.info += "[copycontents]</font>"
+		copy.name = "Copy - [c.name]"
 		copy.fields = c.fields
 		copy.updateinfolinks()
 		to_chat(usr, "<span class='notice'>You tear off the carbon-copy!</span>")
-		c.copied = 1
-		copy.iscopy = 1
+		c.copied = TRUE
+		copy.iscopy = TRUE
 		copy.update_icon()
 		c.update_icon()
 	else
