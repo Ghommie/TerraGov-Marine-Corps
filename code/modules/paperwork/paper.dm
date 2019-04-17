@@ -158,12 +158,7 @@
 	var/locid = 0
 	var/laststart = 1
 	var/textindex = 1
-	var/spam_protection = 100
 	while(locid < 15)
-		spam_protection--
-		if(spam_protection <= 0)
-			return
-
 		var/istart = 0
 		if(links)
 			istart = findtext(info_links, "<span class=\"paper_field\">", laststart)
@@ -214,13 +209,16 @@
 	if(length(t) < 1)		//No input means nothing needs to be parsed
 		return
 
-	t = parsemarkdown(t, user, iscrayon)
+	if(iscrayon)
+		var/obj/item/toy/crayon/C = P
+		var/tint = C.colour
+
+	t = parsemarkdown(t, user, iscrayon, tint)
 
 	if(!iscrayon)
 		t = "<font face=\"[P.font]\" color=[P.colour]>[t]</font>"
 	else
-		var/obj/item/toy/crayon/C = P
-		t = "<font face=\"[CRAYON_FONT]\" color=[C.paint_color]><b>[t]</b></font>"
+		t = "<font face=\"[CRAYON_FONT]\" color=[tint]><b>[t]</b></font>"
 
 	// Count the fields
 	var/laststart = 1
@@ -259,6 +257,7 @@
 		^text^ : Increases the <font size = \"4\">size</font> of the text.<br>
 		%s : Inserts a signature of your name in a foolproof way.<br>
 		%f : Inserts an invisible field which lets you start type from there. Useful for forms.<br>
+		%d : Inserts a timestamp of the current (ingame) year, month and day.
 		<br>
 		<b><center>Pen exclusive commands</center></b><br>
 		((text)) : Decreases the <font size = \"1\">size</font> of the text.<br>
@@ -271,7 +270,7 @@
 /obj/item/paper/Topic(href, href_list)
 	. = ..()
 	var/literate = usr.is_literate()
-	if(!usr.canUseTopic(src, BE_CLOSE, literate))
+	if(!usr.incapacitated || !Adjacent(usr) || literate)
 		return
 
 	if(href_list["help"])
@@ -279,15 +278,15 @@
 		return
 	if(href_list["write"])
 		var/id = href_list["write"]
-		var/t =  stripped_multiline_input("Enter what you want to write:", "Write", no_trim=TRUE)
-		if(!t || !usr.canUseTopic(src, BE_CLOSE, literate))
+		var/t =  stripped_multiline_input("Enter what you want to write:", "Write", no_trim = TRUE)
+		if(!t || usr.incapacitated || !Adjacent(usr) || literate)
 			return
 		var/obj/item/i = usr.get_active_held_item()	//Check to see if he still got that darn pen, also check if he's using a crayon or pen.
-		var/iscrayon = 0
+		var/iscrayon = FALSE
 		if(!istype(i, /obj/item/pen))
 			if(!istype(i, /obj/item/toy/crayon))
 				return
-			iscrayon = 1
+			iscrayon = TRUE
 
 		if(!in_range(src, usr) && loc != usr && !istype(loc, /obj/item/clipboard) && loc.loc != usr && usr.get_active_held_item() != i)	//Some check to see if he's allowed to write
 			return
@@ -296,7 +295,7 @@
 		t = parsepencode(t, i, usr, iscrayon) // Encode everything from pencode to html
 
 		if(t != null)	//No input from the user means nothing needs to be added
-			if(id!="end")
+			if(id != "end")
 				addtofield(text2num(id), t) // He wants to edit a field, let him.
 			else
 				info += t // Oh, he wants to edit to the end of the file, let him.
@@ -557,209 +556,3 @@ then, for every time you included a field, increment fields. */
 	var/offset_y[0] //usage by the photocopier
 	var/rigged = 0
 	var/spam_flag = 0
-
-
-/obj/item/paper/proc/parsepencode(var/t, var/obj/item/tool/pen/P, mob/user as mob, var/iscrayon = 0)
-//	t = copytext(sanitize(t),1,MAX_MESSAGE_LEN)
-
-	t = oldreplacetext(t, "\[center\]", "<center>")
-	t = oldreplacetext(t, "\[/center\]", "</center>")
-	t = oldreplacetext(t, "\[br\]", "<BR>")
-	t = oldreplacetext(t, "\[b\]", "<B>")
-	t = oldreplacetext(t, "\[/b\]", "</B>")
-	t = oldreplacetext(t, "\[i\]", "<I>")
-	t = oldreplacetext(t, "\[/i\]", "</I>")
-	t = oldreplacetext(t, "\[u\]", "<U>")
-	t = oldreplacetext(t, "\[/u\]", "</U>")
-	t = oldreplacetext(t, "\[large\]", "<font size=\"4\">")
-	t = oldreplacetext(t, "\[/large\]", "</font>")
-	t = oldreplacetext(t, "\[sign\]", "<font face=\"[signfont]\"><i>[user ? user.real_name : "Anonymous"]</i></font>")
-	t = oldreplacetext(t, "\[field\]", "<span class=\"paper_field\"></span>")
-
-	t = oldreplacetext(t, "\[h1\]", "<H1>")
-	t = oldreplacetext(t, "\[/h1\]", "</H1>")
-	t = oldreplacetext(t, "\[h2\]", "<H2>")
-	t = oldreplacetext(t, "\[/h2\]", "</H2>")
-	t = oldreplacetext(t, "\[h3\]", "<H3>")
-	t = oldreplacetext(t, "\[/h3\]", "</H3>")
-
-	if(!iscrayon)
-		t = oldreplacetext(t, "\[*\]", "<li>")
-		t = oldreplacetext(t, "\[hr\]", "<HR>")
-		t = oldreplacetext(t, "\[small\]", "<font size = \"1\">")
-		t = oldreplacetext(t, "\[/small\]", "</font>")
-		t = oldreplacetext(t, "\[list\]", "<ul>")
-		t = oldreplacetext(t, "\[/list\]", "</ul>")
-		t = oldreplacetext(t, "\[table\]", "<table border=1 cellspacing=0 cellpadding=3 style='border: 1px solid black;'>")
-		t = oldreplacetext(t, "\[/table\]", "</td></tr></table>")
-		t = oldreplacetext(t, "\[grid\]", "<table>")
-		t = oldreplacetext(t, "\[/grid\]", "</td></tr></table>")
-		t = oldreplacetext(t, "\[row\]", "</td><tr>")
-		t = oldreplacetext(t, "\[cell\]", "<td>")
-		t = oldreplacetext(t, "\[logo\]", "<img src = 'ntlogo.png'>")
-		t = oldreplacetext(t, "\[date\]", "[GAME_YEAR]-[time2text(world.realtime, "MM-DD")]")
-
-		t = "<font face=\"[deffont]\" color=[P ? P.colour : "black"]>[t]</font>"
-	else // If it is a crayon, and he still tries to use these, make them empty!
-		t = oldreplacetext(t, "\[*\]", "")
-		t = oldreplacetext(t, "\[hr\]", "")
-		t = oldreplacetext(t, "\[small\]", "")
-		t = oldreplacetext(t, "\[/small\]", "")
-		t = oldreplacetext(t, "\[list\]", "")
-		t = oldreplacetext(t, "\[/list\]", "")
-		t = oldreplacetext(t, "\[table\]", "")
-		t = oldreplacetext(t, "\[/table\]", "")
-		t = oldreplacetext(t, "\[row\]", "")
-		t = oldreplacetext(t, "\[cell\]", "")
-		t = oldreplacetext(t, "\[logo\]", "")
-
-		t = "<font face=\"[crayonfont]\" color=[P ? P.colour : "black"]><b>[t]</b></font>"
-
-//	t = oldreplacetext(t, "#", "") // Junk converted to nothing!
-
-//Count the fields
-	var/laststart = 1
-	while(fields < 15)
-		var/i = findtext(t, "<span class=\"paper_field\">", laststart)
-		if(i==0)
-			break
-		laststart = i+1
-		fields = min(fields+1, 20)
-	return t
-
-
-/obj/item/paper/proc/openhelp(mob/user as mob)
-	user << browse({"<HTML><HEAD><TITLE>Pen Help</TITLE></HEAD>
-	<BODY>
-		<b><center>Crayon&Pen commands</center></b><br>
-		<br>
-		\[br\] : Creates a linebreak.<br>
-		\[center\] - \[/center\] : Centers the text.<br>
-		\[h1\] - \[/h1\] : Makes the text a first level heading<br>
-		\[h2\] - \[/h2\] : Makes the text a second level heading<br>
-		\[h3\] - \[/h3\] : Makes the text a third level heading<br>
-		\[b\] - \[/b\] : Makes the text <b>bold</b>.<br>
-		\[i\] - \[/i\] : Makes the text <i>italic</i>.<br>
-		\[u\] - \[/u\] : Makes the text <u>underlined</u>.<br>
-		\[large\] - \[/large\] : Increases the <font size = \"4\">size</font> of the text.<br>
-		\[sign\] : Inserts a signature of your name in a foolproof way.<br>
-		\[field\] : Inserts an invisible field which lets you start type from there. Useful for forms.<br>
-		<br>
-		<b><center>Pen exclusive commands</center></b><br>
-		\[small\] - \[/small\] : Decreases the <font size = \"1\">size</font> of the text.<br>
-		\[list\] - \[/list\] : A list.<br>
-		\[*\] : A dot used for lists.<br>
-		\[hr\] : Adds a horizontal rule.
-	</BODY></HTML>"}, "window=paper_help")
-
-/obj/item/paper/Topic(href, href_list)
-	..()
-	if(!usr || (usr.stat || usr.restrained()))
-		return
-
-	if(href_list["write"])
-		var/id = href_list["write"]
-		var/t =  stripped_multiline_input(usr, "Enter what you want to write:", "Write", "", MAX_MESSAGE_LEN)
-		var/shortened_t = copytext(t,1,100)
-		log_admin("PAPER: [usr] ([usr.ckey]) tried to write something. First 100 characters: [shortened_t]")
-
-		var/obj/item/i = usr.get_active_held_item() // Check to see if he still got that darn pen, also check if he's using a crayon or pen.
-		var/iscrayon = 0
-		if(!istype(i, /obj/item/tool/pen))
-			if(!istype(i, /obj/item/toy/crayon))
-				return
-			iscrayon = 1
-
-
-		// if paper is not in usr, then it must be near them, or in a clipboard or folder, which must be in or near usr
-		if(src.loc != usr && !src.Adjacent(usr) && !((istype(src.loc, /obj/item/clipboard) || istype(src.loc, /obj/item/folder)) && (src.loc.loc == usr || src.loc.Adjacent(usr)) ) )
-			return
-
-		t = oldreplacetext(t, "\n", "<BR>")
-		t = parsepencode(t, i, usr, iscrayon) // Encode everything from pencode to html
-
-		if(id!="end")
-			addtofield(text2num(id), t) // He wants to edit a field, let him.
-		else
-			info += t // Oh, he wants to edit to the end of the file, let him.
-			updateinfolinks()
-
-		usr << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[info_links][stamps]</BODY></HTML>", "window=[name]") // Update the window
-
-		update_icon()
-
-
-/obj/item/paper/attackby(obj/item/P, mob/user)
-	..()
-	var/clown = 0
-	if(user.mind && (user.mind.assigned_role == "Clown"))
-		clown = 1
-
-	else if(istype(P, /obj/item/tool/pen) || istype(P, /obj/item/toy/crayon))
-		if ( istype(P, /obj/item/tool/pen/robopen) && P:mode == 2 )
-			P:RenamePaper(user,src)
-		else
-			user << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[info_links][stamps]</BODY></HTML>", "window=[name]")
-		//openhelp(user)
-		return
-
-	else if(istype(P, /obj/item/tool/stamp))
-		if((!in_range(src, usr) && loc != user && !( istype(loc, /obj/item/clipboard) ) && loc.loc != user && user.get_active_held_item() != P))
-			return
-
-		stamps += (stamps=="" ? "<HR>" : "<BR>") + "<i>This paper has been stamped with the [P.name].</i>"
-
-		var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-		var/x
-		var/y
-		if(istype(P, /obj/item/tool/stamp/captain) || istype(P, /obj/item/tool/stamp/centcomm))
-			x = rand(-2, 0)
-			y = rand(-1, 2)
-		else
-			x = rand(-2, 2)
-			y = rand(-3, 2)
-		offset_x += x
-		offset_y += y
-		stampoverlay.pixel_x = x
-		stampoverlay.pixel_y = y
-
-		if(istype(P, /obj/item/tool/stamp/clown))
-			if(!clown)
-				to_chat(user, "<span class='notice'>You are totally unable to use the stamp. HONK!</span>")
-				return
-
-		if(!ico)
-			ico = new
-		ico += "paper_[P.icon_state]"
-		stampoverlay.icon_state = "paper_[P.icon_state]"
-
-		if(!stamped)
-			stamped = new
-		stamped += P.type
-		overlays += stampoverlay
-
-		to_chat(user, "<span class='notice'>You stamp the paper with your rubber stamp.</span>")
-
-	else if(P.heat_source >= 400)
-		burnpaper(P, user)
-
-	add_fingerprint(user)
-	return
-
-/////////// WIP /////////
-
-/obj/item/paper/proc/add_stamp(stamp, color, sheet)
-	var/datum/asset/spritesheet/S = sheet ? sheet : get_asset_datum(/datum/asset/spritesheet/simple/paper)
-	var/atom/A
-	if(isatom(stamp))
-		A = stamp
-	else if (!color || !istext(stamp))
-		return
-	var/stamptag = A ? "[A.icon_state][color]" : "[stamp][color]"
-	if(color && !S.sprites[stamptag])
-		var/icon/I = icon(A ? A.icon : "icons/paperwork_icons/[stamp].png", A ? A.icon_state : "", SOUTH)
-		I.Blend(rgb(color, color, color), ICON_ADD)
-		var/key = "[generate_asset_name(I)].png"
-		register_asset(key, I)
-		S.Insert(stamptag, I)
-	return S.icon_tag(color ? stamptag : A.icon_state)

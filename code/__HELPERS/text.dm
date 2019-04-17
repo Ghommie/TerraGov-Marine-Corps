@@ -87,9 +87,12 @@
 	return html_encode(trim(name, max_length))
 
 // Used to get a properly sanitized multiline input, of max_length
-/proc/stripped_multiline_input(var/mob/user, var/message = "", var/title = "", var/default = "", var/max_length=MAX_MESSAGE_LEN)
+/proc/stripped_multiline_input(mob/user, message = "", title = "", default = "", max_length=MAX_MESSAGE_LEN, no_trim=FALSE)
 	var/name = input(user, message, title, default) as message|null
-	return html_encode(trim(name, max_length))
+	if(no_trim)
+		return copytext(html_encode(name), 1, max_length)
+	else
+		return trim(html_encode(name), max_length)
 
 //Filters out undesirable characters from names
 /proc/reject_bad_name(var/t_in, var/allow_numbers=0, var/max_length=MAX_NAME_LEN)
@@ -432,6 +435,174 @@ proc/TextPreview(var/string,var/len=40)
 	text = replacetext(text, "@everyone", "")
 	return text
 
+/proc/parsemarkdown_basic_step1(t, limited=FALSE)
+	if(length(t) <= 0)
+		return
+
+	// This parses markdown with no custom rules
+
+	// Escape backslashed
+
+	t = replacetext(t, "$", "$-")
+	t = replacetext(t, "\\\\", "$1")
+	t = replacetext(t, "\\**", "$2")
+	t = replacetext(t, "\\*", "$3")
+	t = replacetext(t, "\\__", "$4")
+	t = replacetext(t, "\\_", "$5")
+	t = replacetext(t, "\\^", "$6")
+	t = replacetext(t, "\\((", "$7")
+	t = replacetext(t, "\\))", "$8")
+	t = replacetext(t, "\\|", "$9")
+	t = replacetext(t, "\\%", "$0")
+
+	// Escape  single characters that will be used
+
+	t = replacetext(t, "!", "$a")
+
+	// Parse hr and small
+
+	if(!limited)
+		t = replacetext(t, "((", "<font size=\"1\">")
+		t = replacetext(t, "))", "</font>")
+		t = replacetext(t, regex("(-){3,}", "gm"), "<hr>")
+		t = replacetext(t, regex("^\\((-){3,}\\)$", "gm"), "$1")
+
+		// Parse lists
+
+		var/list/tlist = splittext(t, "\n")
+		var/tlistlen = tlist.len
+		var/listlevel = -1
+		var/singlespace = -1 // if 0, double spaces are used before asterisks, if 1, single are
+		for(var/i = 1, i <= tlistlen, i++)
+			var/line = tlist[i]
+			var/count_asterisk = length(replacetext(line, regex("\[^\\*\]+", "g"), ""))
+			if(count_asterisk % 2 == 1 && findtext(line, regex("^\\s*\\*", "g"))) // there is an extra asterisk in the beggining
+
+				var/count_w = length(replacetext(line, regex("^( *)\\*.*$", "g"), "$1")) // whitespace before asterisk
+				line = replacetext(line, regex("^ *(\\*.*)$", "g"), "$1")
+
+				if(singlespace == -1 && count_w == 2)
+					if(listlevel == 0)
+						singlespace = 0
+					else
+						singlespace = 1
+
+				if(singlespace == 0)
+					count_w = count_w % 2 ? round(count_w / 2 + 0.25) : count_w / 2
+
+				line = replacetext(line, regex("\\*", ""), "<li>")
+				while(listlevel < count_w)
+					line = "<ul>" + line
+					listlevel++
+				while(listlevel > count_w)
+					line = "</ul>" + line
+					listlevel--
+
+			else while(listlevel >= 0)
+				line = "</ul>" + line
+				listlevel--
+
+			tlist[i] = line
+		// end for
+
+		t = tlist[1]
+		for(var/i = 2, i <= tlistlen, i++)
+			t += "\n" + tlist[i]
+
+		while(listlevel >= 0)
+			t += "</ul>"
+			listlevel--
+
+	else
+		t = replacetext(t, "((", "")
+		t = replacetext(t, "))", "")
+
+	// Parse headers
+
+	t = replacetext(t, regex("^#(?!#) ?(.+)$", "gm"), "<h2>$1</h2>")
+	t = replacetext(t, regex("^##(?!#) ?(.+)$", "gm"), "<h3>$1</h3>")
+	t = replacetext(t, regex("^###(?!#) ?(.+)$", "gm"), "<h4>$1</h4>")
+	t = replacetext(t, regex("^#### ?(.+)$", "gm"), "<h5>$1</h5>")
+
+	// Parse most rules
+
+	t = replacetext(t, regex("\\*(\[^\\*\]*)\\*", "g"), "<i>$1</i>")
+	t = replacetext(t, regex("_(\[^_\]*)_", "g"), "<i>$1</i>")
+	t = replacetext(t, "<i></i>", "!")
+	t = replacetext(t, "</i><i>", "!")
+	t = replacetext(t, regex("\\!(\[^\\!\]+)\\!", "g"), "<b>$1</b>")
+	t = replacetext(t, regex("\\^(\[^\\^\]+)\\^", "g"), "<font size=\"4\">$1</font>")
+	t = replacetext(t, regex("\\|(\[^\\|\]+)\\|", "g"), "<center>$1</center>")
+	t = replacetext(t, "!", "</i><i>")
+
+	return t
+
+/proc/parsemarkdown_basic_step2(t)
+	if(length(t) <= 0)
+		return
+
+	// Restore the single characters used
+
+	t = replacetext(t, "$a", "!")
+
+	// Redo the escaping
+
+	t = replacetext(t, "$1", "\\")
+	t = replacetext(t, "$2", "**")
+	t = replacetext(t, "$3", "*")
+	t = replacetext(t, "$4", "__")
+	t = replacetext(t, "$5", "_")
+	t = replacetext(t, "$6", "^")
+	t = replacetext(t, "$7", "((")
+	t = replacetext(t, "$8", "))")
+	t = replacetext(t, "$9", "|")
+	t = replacetext(t, "$0", "%")
+	t = replacetext(t, "$-", "$")
+
+	return t
+
+/proc/parsemarkdown_basic(t, limited = FALSE)
+	t = parsemarkdown_basic_step1(t, limited)
+	t = parsemarkdown_basic_step2(t)
+	return t
+
+/proc/parsemarkdown(t, mob/user, limited = FALSE, color)
+	if(length(t) <= 0)
+		return
+
+	// Premanage whitespace
+
+	t = replacetext(t, regex("\[^\\S\\r\\n \]", "g"), "  ")
+
+	t = parsemarkdown_basic_step1(t, limited)
+
+	t = replacetext(t, regex("%s(?:ign)?(?=\\s|$)", "igm"), user ? "<font face=\"[SIGNFONT]\"><i>[user.real_name]</i></font>" : "<span class=\"paper_field\"></span>")
+	t = replacetext(t, regex("%f(?:ield)?(?=\\s|$)", "igm"), "<span class=\"paper_field\"></span>")
+	t = replacetext(t, regex("%d(?:ate)?(?=\\s|$)", "igm"), "[GAME_YEAR]-[time2text(world.realtime, "MM-DD")]"
+
+	if(findtext(t, regex("%((.*)?logo(?=\\s|$)", "igm"))
+		t = logo_markdown(t, limited, color)
+
+	t = parsemarkdown_basic_step2(t)
+
+	// Manage whitespace
+
+	t = replacetext(t, regex("(?:\\r\\n?|\\n)", "g"), "<br>")
+
+	t = replacetext(t, "  ", "&nbsp;&nbsp;")
+
+	// Done
+
+	return t
+
+/proc/logo_markdown(t, crayon = FALSE, color)
+	var/asset/datum/spritesheet/simple/paper/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
+	var/style = limited ? "crayon_" : "outline_"
+	t = replacetext(t, regex("%(nt|nanotrasen)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]nt", color)]")
+	t = replacetext(t, regex("%(zippy|pizza|zippypizza)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]pizza", color)]")
+	t = replacetext(t, regex("%(.*)?logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]tgmc", color)]")
+
+	return t
 
 GLOBAL_LIST_INIT(zero_character_only, list("0"))
 GLOBAL_LIST_INIT(hex_characters, list("0","1","2","3","4","5","6","7","8","9","a","b","c","d","e","f"))

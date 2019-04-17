@@ -58,6 +58,8 @@
 	if(CONFIG_GET(flag/log_game))
 		WRITE_LOG(GLOB.world_game_log, "GAME: [text]")
 
+/proc/log_paper(text)
+	WRITE_LOG(GLOB.world_paper_log, "PAPER: [text]")
 
 /proc/log_access(text)
 	if(CONFIG_GET(flag/log_access))

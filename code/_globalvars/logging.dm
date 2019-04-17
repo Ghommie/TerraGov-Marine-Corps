@@ -18,6 +18,8 @@ GLOBAL_VAR(sql_error_log)
 GLOBAL_PROTECT(sql_error_log)
 GLOBAL_VAR(world_manifest_log)
 GLOBAL_PROTECT(world_manifest_log)
+GLOBAL_VAR(world_paper_log)
+GLOBAL_PROTECT(world_paper_log)
 
 
 GLOBAL_LIST_EMPTY(admin_log)

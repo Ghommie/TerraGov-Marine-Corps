@@ -529,12 +529,32 @@ GLOBAL_LIST_EMPTY(asset_datums)
 		"stamp-hos" = 'icons/paperwork_icons/large_stamp-hos.png',
 		"stamp-rd" = 'icons/paperwork_icons/large_stamp-rd.png',
 		"stamp-cap" = 'icons/paperwork_icons/large_stamp-cap.png',
+		"stamp-cap-alt" = 'icons/paperwork_icons/large_stamp-cap-alt.png",
 		"stamp-qm" = 'icons/paperwork_icons/large_stamp-qm.png',
 		"stamp-law" = 'icons/paperwork_icons/large_stamp-law.png',
-		"tgmclogo" = 'icons/paperwork_icons/tgmclogo.png',
-		"tgmclogo_outline" = 'icons/paperwork_icons/tgmclogo_outline.png',
-		"ntlogo" = 'icons/paperwork_icons/ntlogo.png',
-		"ntlogo_outline" = 'icons/paperwork_icons/ntlogo_outline.png',
-		"crayon_tgmclogo" = 'icons/paperwork_icons/crayon_tgmclogo.png',
-		"crayon_ntlogo" = 'icons/paperwork_icons/crayon_ntlogo.png'
+		"stamp-intaff" = 'icons/paperwork_icons/large_stamp-intaff.png",
+		"stamp-ro" = 'icons/paperwork_icons/large_stamp-ro.png",
+		"stamp-mp" = 'icons/paperwork_icons/large_stamp-mp.png",
+		"stamp-cent" = 'icons/paperwork_icons/large_stamp-cent.png",
+		"stamp-tgmc" = 'icons/paperwork_icons/large_stamp-tgmc.png',
+		"stamp-nt" = 'icons/paperwork_icons/large_stamp-nt.png',
+		"outline_tgmc" = 'icons/paperwork_icons/outline_tgmc.png',
+		"outline_nt" = 'icons/paperwork_icons/outline_nt.png',
+		"crayon_tgmc" = 'icons/paperwork_icons/crayon_tgmc.png',
+		"crayon_nt" = 'icons/paperwork_icons/crayon_nt.png'
 	)
+
+/datum/asset/spritesheet/simple/paper/proc/add_icon_markdown(stamp, color)
+	var/atom/A
+	if(isatom(stamp))
+		A = stamp
+	else if (!color || !istext(stamp))
+		return
+	var/stamptag = A ? "[A.icon_state][color]" : "[stamp][color]"
+	if(color && !sprites[stamptag])
+		var/icon/I = icon(A ? A.icon : "icons/paperwork_icons/[stamp].png", A ? A.icon_state : "", SOUTH)
+		I.Blend(rgb(color, color, color), ICON_ADD)
+		var/key = "[generate_asset_name(I)].png"
+		register_asset(key, I)
+		Insert(stamptag, I)
+	return icon_tag(color ? stamptag : A.icon_state)
