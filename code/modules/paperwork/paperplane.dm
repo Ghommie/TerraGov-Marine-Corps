@@ -52,7 +52,7 @@
 	return ..()
 
 /obj/item/paperplane/suicide_act(mob/living/user)
-	user.Stun(200)
+	user.Stun(10)
 	user.visible_message("<span class='suicide'>[user] jams [src] in [user.p_their()] nose. It looks like [user.p_theyre()] trying to commit suicide!</span>")
 	user.adjust_blurriness(6)
 	sleep(10)
@@ -63,7 +63,9 @@
 	var/list/stamped = internalPaper.stamped
 	if(stamped)
 		for(var/S in stamped)
-			add_overlay("paperplane_[S]")
+			var/mutable_appearance/planeoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paperplane_[S.icon_state]")
+			planeoverlay.color = stamped[S]
+			add_overlay(planeoverlay)
 
 /obj/item/paperplane/attack_self(mob/user)
 	if(QDELETED(internalPaper))
@@ -100,19 +102,6 @@
 
 	add_fingerprint(user)
 
-/obj/item/paperplane/proc/burnpaper(obj/item/P, mob/user)
-	user.visible_message("<span class='rose'>[user] holds \the [P] up to \the [src], it looks like [user.p_theyre()] trying to burn it!</span>", \
-	"<span class='rose'>You hold \the [P] up to \the [src], burning it slowly.</span>")
-	if(!do_after(user, 20, TRUE, 5, BUSY_ICON_HOSTILE) || !(in_range(user, src))  || !P.is_hot())
-		return
-	user.visible_message("<span class='rose'>[user] burns right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>", \
-	"<span class='rose'>You burn right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>")
-	if(user.get_inactive_held_item() == src)
-		user.dropItemToGround(src)
-	new /obj/effect/decal/cleanable/ash(loc)
-	qdel(src)
-
-
 /obj/item/paperplane/throw_at(atom/target, range, speed, mob/thrower, spin = FALSE)
 	. = ..(target, range, speed, thrower, FALSE) //glide, not spin.
 
@@ -137,7 +126,7 @@
 			var/mob/living/carbon/human/H = hit_atom
 			var/datum/internal_organ/eyes/E = H.internal_organs_by_name["eyes"]
 			E?.take_damage(rand(5, 7), TRUE)
-		C.Stun(40)
+		C.KnockDown(2)
 		C.emote("scream")
 */
 
@@ -154,8 +143,7 @@
 	/* //Origami Master
 	var/datum/action/innate/origami/origami_action = locate() in user.actions
 	if(origami_action?.active)
-		plane_type = /obj/item/paperplane/syndicate
-	*/
+		plane_type = /obj/item/paperplane/syndicate */
 	I = new plane_type(user, src)
 	user.put_in_hands(I)
 	qdel(src)

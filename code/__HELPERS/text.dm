@@ -566,7 +566,7 @@ proc/TextPreview(var/string,var/len=40)
 	t = parsemarkdown_basic_step2(t)
 	return t
 
-/proc/parsemarkdown(t, mob/user, limited = FALSE, color)
+/proc/parsemarkdown(t, mob/user, limited = FALSE, color, item/paper/P)
 	if(length(t) <= 0)
 		return
 
@@ -578,9 +578,9 @@ proc/TextPreview(var/string,var/len=40)
 
 	t = replacetext(t, regex("%s(?:ign)?(?=\\s|$)", "igm"), user ? "<font face=\"[SIGNFONT]\"><i>[user.real_name]</i></font>" : "<span class=\"paper_field\"></span>")
 	t = replacetext(t, regex("%f(?:ield)?(?=\\s|$)", "igm"), "<span class=\"paper_field\"></span>")
-	t = replacetext(t, regex("%d(?:ate)?(?=\\s|$)", "igm"), "[GAME_YEAR]-[time2text(world.realtime, "MM-DD")]"
+	t = replacetext(t, regex("%d(?:ate)?(?=\\s|$)", "igm"), "[GAME_YEAR]-[time2text(world.realtime, "MM-DD")]")
 
-	if(findtext(t, regex("%((.*)?logo(?=\\s|$)", "igm"))
+	if(findtext(t, regex("%((.*)?logo(?=\\s|$)", "igm")))
 		t = logo_markdown(t, limited, color)
 
 	t = parsemarkdown_basic_step2(t)
@@ -595,12 +595,12 @@ proc/TextPreview(var/string,var/len=40)
 
 	return t
 
-/proc/logo_markdown(t, crayon = FALSE, color)
+/proc/logo_markdown(t, crayon = FALSE, color, item/paper/P)
 	var/asset/datum/spritesheet/simple/paper/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
 	var/style = limited ? "crayon_" : "outline_"
-	t = replacetext(t, regex("%(nt|nanotrasen)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]nt", color)]")
-	t = replacetext(t, regex("%(zippy|pizza|zippypizza)logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]pizza", color)]")
-	t = replacetext(t, regex("%(tgmc)?logo(?=\\s|$)", "igm"), "[sheet.icon_tag("[style]tgmc", color)]")
+	t = replacetext(t, regex("%(nt|nanotrasen)logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]nt", color, P)]")
+	t = replacetext(t, regex("%(zippy|pizza|zippypizza)logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]pizza", color, P)]")
+	t = replacetext(t, regex("%(tgmc)?logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]tgmc", color, P)]")
 
 	return t
 

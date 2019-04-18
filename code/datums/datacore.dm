@@ -231,6 +231,10 @@ GLOBAL_DATUM_INIT(datacore, /datum/datacore, new)
 		S.fields["notes"] = "No notes."
 	security += S
 
+	for(var/a in GLOB.record_cabinets)
+		var/obj/structure/filingcabinet/records/R = a
+		R.sort_record(G)
+
 
 /proc/get_id_photo(mob/living/carbon/human/H, client/C, show_directions = list(SOUTH))
 	var/datum/job/J = SSjob.GetJob(H.mind.assigned_role)

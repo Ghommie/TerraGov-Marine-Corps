@@ -56,9 +56,9 @@
 /obj/item/clipboard/attack_self(mob/user as mob)
 	var/dat = "<title>Clipboard</title>"
 	if(haspen)
-		dat += "<A href='?src=\ref[src];pen=1'>Remove Pen</A><BR><HR>"
+		dat += "<A href='?src=[REF(src)];pen=1'>Remove Pen</A><BR><HR>"
 	else
-		dat += "<A href='?src=\ref[src];addpen=1'>Add Pen</A><BR><HR>"
+		dat += "<A href='?src=[REF(src)];addpen=1'>Add Pen</A><BR><HR>"
 
 	//The topmost paper. You can't organise contents directly in byond, so this is what we're stuck with.	-Pete
 	if(toppaper)

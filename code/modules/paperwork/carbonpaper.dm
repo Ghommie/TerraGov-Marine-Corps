@@ -1,33 +1,28 @@
 /obj/item/paper/carbon
-	name = "paper"
 	icon_state = "paper_stack"
-	item_state = "paper"
-	var/copied = FALSE
-	var/iscopy = FALSE
+	var/copies_left = 1
 
 /obj/item/paper/carbon/update_icon()
-	icon_state = iscopy ? "cpaper" : copied ? "paper" : "paper_stack"
-	if(info)
-		icon_state += "_words"
+	icon_state = "[copies_left ? "c" : ""]paper[info ? "_words" : ""]"
 
 /obj/item/paper/carbon/verb/removecopy()
 	set name = "Remove carbon-copy"
 	set category = "Object"
 	set src in usr
 
-	if (!copied)
-		var/obj/item/paper/carbon/c = src
-		var/copycontents = html_decode(c.info)
-		var/obj/item/paper/carbon/copy = new /obj/item/paper/carbon (usr.loc)
-		copycontents = replacetext(copycontents, regex("(?=<font face=\"(\\w*|\\s*)\"\\s)color=\"(\\w*|\\s*)\""), "")	//breaks the existing color tag, since we need to retain the innermost tag. Now regex flavored.
-		copy.info += "[copycontents]</font>"
-		copy.name = "Copy - [c.name]"
-		copy.fields = c.fields
-		copy.updateinfolinks()
-		to_chat(usr, "<span class='notice'>You tear off the carbon-copy!</span>")
-		c.copied = TRUE
-		copy.iscopy = TRUE
-		copy.update_icon()
-		c.update_icon()
+	if (copies_left > 0)
+		var/obj/item/paper/carboncopy/C = copy_paper(usr.loc, obj/item/paper/carboncopy)
+		to_chat(usr, "<span class='notice'>You tear off a carbon-copy!</span>")
+		copies_left--
+		update_icon()
 	else
 		to_chat(usr, "There are no more carbon copies attached to this paper!")
+
+/obj/item/paper/carbon/can_bundle(mob/user)
+	if (copies_left)
+		to_chat(user, "<span class='notice'>Take off the carbon cop[copies_left > 1 : "ies" : "y"] first.</span>")
+		return FALSE
+	return TRUE
+
+/obj/item/paper/carboncopy
+	icon_state = "copypaper"

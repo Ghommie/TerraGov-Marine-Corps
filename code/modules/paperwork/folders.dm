@@ -3,8 +3,8 @@
 	desc = "A folder."
 	icon = 'icons/obj/bureaucracy.dmi'
 	icon_state = "folder"
-	w_class = 2
-	var/updateicon = 0//If they spawn with premade papers, update icon
+	w_class = WEIGHT_CLASS_SMALL
+	var/list/canhold = list(/obj/item/paper, /obj/item/photo, /obj/item/documents, /obj/item/paper_bundle)
 
 /obj/item/folder/blue
 	desc = "A blue folder."
@@ -34,73 +34,87 @@
 	..()
 	icon_state = "folder_black[pick("_red", "_green", "_blue", "_yellow", "_white")]"
 
-/obj/item/folder/New()
-	if(updateicon)
-		update_icon()
-
 /obj/item/folder/update_icon()
-	overlays.Cut()
+	cut_overlays()
 	if(contents.len)
-		overlays += "folder_paper"
-	return
+		add_overlay("folder_paper")
 
-/obj/item/folder/attackby(obj/item/W as obj, mob/user as mob)
-	if(istype(W, /obj/item/paper) || istype(W, /obj/item/photo) || istype(W, /obj/item/paper_bundle))
-		if(user.transferItemToLoc(W, src))
-			to_chat(user, "<span class='notice'>You put the [W] into \the [src].</span>")
-			update_icon()
-	else if(istype(W, /obj/item/tool/pen))
-		var/n_name = copytext(sanitize(input(usr, "What would you like to label the folder?", "Folder Labelling", null)  as text), 1, MAX_NAME_LEN)
-		if((loc == usr && usr.stat == 0))
-			name = "folder[(n_name ? text("- '[n_name]'") : null)]"
+/obj/item/folder/attackby(obj/item/W, mob/user, params)
+	if(is_type_in_list(canhold))
+		if(!user.transferItemToLoc(W, src))
+			return
+		to_chat(user, "<span class='notice'>You put [W] into [src].</span>")
+		update_icon()
+	else if(istype(W, /obj/item/pen))
+		if(!user.is_literate())
+			to_chat(user, "<span class='notice'>You scribble illegibly on the cover of [src]!</span>")
+			return
+		var/n_name = copytext(sanitize(input(user, "What would you like to label the folder?", "Folder Labelling", null) as text), 1, MAX_NAME_LEN)
+		if(user.Adjacent(src) && !user.incapacitated())
+			name = "folder[(n_name ? " - '[n_name]'" : null)]"
+	else
+		return ..()
 
-/obj/item/folder/attack_self(mob/user as mob)
+/obj/item/folder/attack_self(mob/user)
 	var/dat = "<title>[name]</title>"
 
-	for(var/obj/item/paper/P in src)
-		dat += "<A href='?src=\ref[src];remove=\ref[P]'>Remove</A> - <A href='?src=\ref[src];read=\ref[P]'>[P.name]</A><BR>"
-	for(var/obj/item/photo/Ph in src)
-		dat += "<A href='?src=\ref[src];remove=\ref[Ph]'>Remove</A> - <A href='?src=\ref[src];look=\ref[Ph]'>[Ph.name]</A><BR>"
-	for(var/obj/item/paper_bundle/Pb in src)
-		dat += "<A href='?src=\ref[src];remove=\ref[Pb]'>Remove</A> - <A href='?src=\ref[src];browse=\ref[Pb]'>[Pb.name]</A><BR>"
+	for(var/obj/item/I in src)
+		dat += "<A href='?src=[REF(src)];remove=[REF(I)]'>Remove</A> - <A href='?src=[REF(src)];read=[REF(I)]'>[I.name]</A><BR>"
 	user << browse(dat, "window=folder")
 	onclose(user, "folder")
 	add_fingerprint(usr)
-	return
 
 /obj/item/folder/Topic(href, href_list)
 	..()
-	if((usr.stat || usr.restrained()))
+	if(usr.incapacitated() || usr.Adjacent(src))
 		return
 
-	if(src.loc == usr)
+	if(href_list["remove"])
+		var/obj/item/I = locate(href_list["remove"]) in src
+		if(istype(I))
+			I.forceMove(usr.loc)
+			usr.put_in_hands(I)
 
-		if(href_list["remove"])
-			var/obj/item/P = locate(href_list["remove"])
-			if(P && (P.loc == src) && istype(P))
-				P.loc = usr.loc
-				usr.put_in_hands(P)
-
-		else if(href_list["read"])
-			var/obj/item/paper/P = locate(href_list["read"])
-			if(P && (P.loc == src) && istype(P))
-				if(!(ishuman(usr) || isobserver(usr) || issilicon(usr)))
-					usr << browse("<HTML><HEAD><TITLE>[P.name]</TITLE></HEAD><BODY>[stars(P.info)][P.stamps]</BODY></HTML>", "window=[P.name]")
-					onclose(usr, "[P.name]")
-				else
-					usr << browse("<HTML><HEAD><TITLE>[P.name]</TITLE></HEAD><BODY>[P.info][P.stamps]</BODY></HTML>", "window=[P.name]")
-					onclose(usr, "[P.name]")
-		else if(href_list["look"])
-			var/obj/item/photo/P = locate(href_list["look"])
-			if(P && (P.loc == src) && istype(P))
-				P.show(usr)
-		else if(href_list["browse"])
-			var/obj/item/paper_bundle/P = locate(href_list["browse"])
-			if(P && (P.loc == src) && istype(P))
-				P.attack_self(usr)
-				onclose(usr, "[P.name]")
+	if(href_list["read"])
+		var/obj/item/I = locate(href_list["read"]) in src
+		if(istype(I))
+			usr.examinate(I)
 
 		//Update everything
 		attack_self(usr)
 		update_icon()
-	return
+
+/obj/item/folder/documents
+	name = "folder- 'TOP SECRET'"
+	desc = "A folder stamped \"Top Secret - Property of Nanotrasen Corporation. Unauthorized distribution is punishable by death.\""
+
+/obj/item/folder/documents/Initialize()
+	. = ..()
+	new /obj/item/documents/nanotrasen(src)
+	update_icon()
+
+/obj/item/folder/syndicate
+	icon_state = "folder_syndie"
+	name = "folder- 'TOP SECRET'"
+	desc = "A folder stamped \"Top Secret - Property of The Syndicate.\""
+
+/obj/item/folder/syndicate/red
+	icon_state = "folder_sred"
+
+/obj/item/folder/syndicate/red/Initialize()
+	. = ..()
+	new /obj/item/documents/syndicate/red(src)
+	update_icon()
+
+/obj/item/folder/syndicate/blue
+	icon_state = "folder_sblue"
+
+/obj/item/folder/syndicate/blue/Initialize()
+	. = ..()
+	new /obj/item/documents/syndicate/blue(src)
+	update_icon()
+
+/obj/item/folder/syndicate/mining/Initialize()
+	. = ..()
+	new /obj/item/documents/syndicate/mining(src)
+	update_icon()

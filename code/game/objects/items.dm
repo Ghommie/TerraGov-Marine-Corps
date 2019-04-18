@@ -824,3 +824,13 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 		user.inertia_dir = get_dir(target, user)
 		step(user, user.inertia_dir)
 	return
+
+/obj/item/proc/burnpaper(obj/item/P, mob/user) //I gargantually dislike having to do this, but the current situation fire code is indecencent.
+	user.visible_message("<span class='rose'>[user] holds \the [P] up to \the [src], it looks like [user.p_theyre()] trying to burn it!</span>", \
+	"<span class='rose'>You hold \the [P] up to \the [src], burning it slowly.</span>")
+	if(!do_after(user, 20, TRUE, 5, BUSY_ICON_HOSTILE) || !(in_range(user, src))  || !P.is_hot())
+		return
+	user.visible_message("<span class='rose'>[user] burns right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>", \
+	"<span class='rose'>You burn right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>")
+	new /obj/effect/decal/cleanable/ash(loc)
+	qdel(src)

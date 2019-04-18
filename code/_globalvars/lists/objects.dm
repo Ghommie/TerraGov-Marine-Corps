@@ -55,3 +55,5 @@ GLOBAL_LIST_EMPTY(alert_consoles)			// Station alert consoles, /obj/machinery/co
 GLOBAL_LIST_INIT(supply_drops, typecacheof(list(
 	/obj/structure/closet/crate,
 	/obj/machinery/vending)))
+
+GLOBAL_LIST_EMPTY(record_cabinets)

@@ -544,13 +544,19 @@ GLOBAL_LIST_EMPTY(asset_datums)
 		"crayon_nt" = 'icons/paperwork_icons/crayon_nt.png'
 	)
 
-/datum/asset/spritesheet/simple/paper/proc/add_icon_markdown(stamp, color)
+/datum/asset/spritesheet/simple/paper/proc/add_icon_markdown(stamp, color, item/paper/P)
 	var/atom/A
 	if(isatom(stamp))
 		A = stamp
-	else if (!color || !istext(stamp))
+	else if (!istext(stamp) && !color)
 		return
 	var/stamptag = A ? "[A.icon_state][color]" : "[stamp][color]"
+	if(P)
+		if(P.image_threshold < 1)
+			return
+		P.image_threshold--
+		LAZYINITLIST(P.logos[stamp])
+		P.logos[stamp] += stamptag
 	if(color && !sprites[stamptag])
 		var/icon/I = icon(A ? A.icon : "icons/paperwork_icons/[stamp].png", A ? A.icon_state : "", SOUTH)
 		I.Blend(rgb(color, color, color), ICON_ADD)
