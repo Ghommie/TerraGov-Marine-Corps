@@ -62,13 +62,7 @@
 		R.info += "<i>Authorised NT officer overseeing creation:</i> [source_db.held_card.registered_name]<br>"
 
 		//stamp the paper
-		var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-		stampoverlay.icon_state = "paper_stamp-cent"
-		if(!R.stamped)
-			R.stamped = new
-		R.stamped += /obj/item/tool/stamp
-		R.overlays += stampoverlay
-		R.stamps += "<HR><i>This paper has been stamped by the Accounts Database.</i>"
+		R.stamp_paper("stamp-nt", STAMP_RECTANGULAR)
 
 	//add the account
 	M.transaction_log.Add(T)

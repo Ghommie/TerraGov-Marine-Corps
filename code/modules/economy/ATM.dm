@@ -365,13 +365,7 @@ log transactions
 					R.info += "<i>Service terminal ID:</i> [machine_id]<br>"
 
 					//stamp the paper
-					var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-					stampoverlay.icon_state = "paper_stamp-cent"
-					if(!R.stamped)
-						R.stamped = new
-					R.stamped += /obj/item/tool/stamp
-					R.overlays += stampoverlay
-					R.stamps += "<HR><i>This paper has been stamped by the NT Automatic Teller Machine.</i>"
+					R.stamp_paper("stamp-nt", STAMP_RECTANGULAR)
 
 				if(prob(50))
 					playsound(loc, 'sound/items/polaroid1.ogg', 15, 1)
@@ -407,13 +401,7 @@ log transactions
 					R.info += "</table>"
 
 					//stamp the paper
-					var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-					stampoverlay.icon_state = "paper_stamp-cent"
-					if(!R.stamped)
-						R.stamped = new
-					R.stamped += /obj/item/tool/stamp
-					R.overlays += stampoverlay
-					R.stamps += "<HR><i>This paper has been stamped by the NT Automatic Teller Machine.</i>"
+					R.stamp_paper("stamp-nt", STAMP_RECTANGULAR)
 
 				if(prob(50))
 					playsound(loc, 'sound/items/polaroid1.ogg', 15, 1)

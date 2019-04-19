@@ -80,6 +80,10 @@
 	hitsound = 'sound/weapons/bladeslice.ogg'
 	stamp_flags = STAMP_CIRCULAR
 
+/obj/item/tool/stamp/nt
+	name "\improper NT rubber stamp"
+	icon_state = "stamp-nt"
+
 /obj/item/tool/stamp/ro
 	name = "requisition officer's rubber stamp"
 	icon_state = "stamp-ro"

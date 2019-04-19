@@ -3,7 +3,6 @@
  *		Filing Cabinets
  *		Security Record Cabinets
  *		Medical Record Cabinets
- *		Employment Contract Cabinets
  */
 
 

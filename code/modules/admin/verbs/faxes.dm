@@ -59,13 +59,7 @@ GLOBAL_LIST_EMPTY(faxes)
 		P.update_icon()
 
 		if(admin)
-			var/image/stampoverlay = image('icons/obj/bureaucracy.dmi')
-			stampoverlay.icon_state = "paper_stamp-uscm"
-			if(!P.stamped)
-				P.stamped = new
-			P.stamped += /obj/item/tool/stamp
-			P.overlays += stampoverlay
-			P.stamps += "<HR><i>This paper has been stamped by the High Command Quantum Relay.</i>"
+			P.stamp_paper("stamp-uscm", STAMP_CIRCULAR)
 
 		playsound(FM.loc, "sound/items/polaroid1.ogg", 15, 1)
 
