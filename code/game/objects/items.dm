@@ -825,10 +825,10 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 		step(user, user.inertia_dir)
 	return
 
-/obj/item/proc/burnpaper(obj/item/P, mob/user) //The current situation fire code is indecencently unfit, I don't like this either.
-	user.visible_message("<span class='rose'>[user] holds \the [P] up to \the [src], it looks like [user.p_theyre()] trying to burn it!</span>", \
-	"<span class='rose'>You hold \the [P] up to \the [src], burning it slowly.</span>")
-	if(!do_after(user, 20, TRUE, 5, BUSY_ICON_HOSTILE) || !(in_range(user, src))  || !P.is_hot())
+/obj/item/proc/burnpaper(obj/item/I, mob/user) //The current situation fire code is indecencently unfit, I don't like this either.
+	user.visible_message("<span class='rose'>[user] holds \the [I] up to \the [src], it looks like [user.p_theyre()] trying to burn it!</span>", \
+	"<span class='rose'>You hold \the [I] up to \the [src], burning it slowly.</span>")
+	if(!do_after(user, 20, TRUE, 5, BUSY_ICON_HOSTILE) || !(in_range(user, src))  || I.heat_source < 400)
 		return
 	user.visible_message("<span class='rose'>[user] burns right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>", \
 	"<span class='rose'>You burn right through \the [src], turning it to ash. It flutters through the air before settling on the floor in a heap.</span>")
@@ -844,4 +844,5 @@ modules/mob/living/carbon/human/life.dm if you die, you will be zoomed out.
 	forceMove(P)
 	to_chat(user, "<span class ='notice'>You insert [src] into [P].</span>")
 	flick("photocopier1", P)
+	P.copy = src
 	return TRUE

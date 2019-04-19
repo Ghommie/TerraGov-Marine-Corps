@@ -9,7 +9,7 @@
 				return
 
 			if("stealth")
-				new /obj/item/tool/pen/paralysis(src)
+				new /obj/item/tool/pen/chem/paralysis(src)
 				new /obj/item/chameleon(src)
 				return
 

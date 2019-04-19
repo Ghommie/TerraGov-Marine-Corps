@@ -529,13 +529,13 @@ GLOBAL_LIST_EMPTY(asset_datums)
 		"stamp-hos" = 'icons/paperwork_icons/large_stamp-hos.png',
 		"stamp-rd" = 'icons/paperwork_icons/large_stamp-rd.png',
 		"stamp-cap" = 'icons/paperwork_icons/large_stamp-cap.png',
-		"stamp-cap-alt" = 'icons/paperwork_icons/large_stamp-cap-alt.png",
+		"stamp-cap-alt" = 'icons/paperwork_icons/large_stamp-cap-alt.png',
 		"stamp-qm" = 'icons/paperwork_icons/large_stamp-qm.png',
 		"stamp-law" = 'icons/paperwork_icons/large_stamp-law.png',
-		"stamp-intaff" = 'icons/paperwork_icons/large_stamp-intaff.png",
-		"stamp-ro" = 'icons/paperwork_icons/large_stamp-ro.png",
-		"stamp-mp" = 'icons/paperwork_icons/large_stamp-mp.png",
-		"stamp-cent" = 'icons/paperwork_icons/large_stamp-cent.png",
+		"stamp-intaff" = 'icons/paperwork_icons/large_stamp-intaff.png',
+		"stamp-ro" = 'icons/paperwork_icons/large_stamp-ro.png',
+		"stamp-mp" = 'icons/paperwork_icons/large_stamp-mp.png',
+		"stamp-cent" = 'icons/paperwork_icons/large_stamp-cent.png',
 		"stamp-tgmc" = 'icons/paperwork_icons/large_stamp-tgmc.png',
 		"stamp-nt" = 'icons/paperwork_icons/large_stamp-nt.png',
 		"outline_tgmc" = 'icons/paperwork_icons/outline_tgmc.png',
@@ -544,7 +544,7 @@ GLOBAL_LIST_EMPTY(asset_datums)
 		"crayon_nt" = 'icons/paperwork_icons/crayon_nt.png'
 	)
 
-/datum/asset/spritesheet/simple/paper/proc/add_icon_markdown(stamp, color, item/paper/P)
+/datum/asset/spritesheet/simple/paper/proc/add_icon_markdown(stamp, color, obj/item/paper/P)
 	var/atom/A
 	if(isatom(stamp))
 		A = stamp

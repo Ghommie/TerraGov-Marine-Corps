@@ -10,7 +10,7 @@
 /obj/machinery/photocopier
 	name = "photocopier"
 	desc = "Used to copy important documents and anatomy studies."
-	icon = 'icons/obj/library.dmi'
+	icon = 'icons/obj/machines/library.dmi'
 	icon_state = "photocopier"
 	density = TRUE
 	use_power = IDLE_POWER_USE
@@ -24,9 +24,8 @@
 	var/toner = 30 //how much toner is left! woooooo~
 	var/maxcopies = 10	//how many copies can be copied at once
 	var/greytoggle = TRUE
-	var/mob/living/ass
 	var/busy = FALSE
-	var/list/canhold = list(/obj/item/paper, /obj/item/photo, /obj/item/paper_bundle, /obj/item/documents, /obj/item/toner)
+	var/list/canhold = list(/obj/item/paper, /obj/item/photo, /obj/item/documents, /obj/item/toner)
 
 /obj/machinery/photocopier/attack_hand(mob/user)
 	ui_interact(user)
@@ -50,8 +49,8 @@
 			if(prob(50))
 				qdel(src)
 			else if(toner > 0)
-					new /obj/effect/decal/cleanable/blood/oil(get_turf(src))
-					toner = 0
+				new /obj/effect/decal/cleanable/blood/oil(get_turf(src))
+				toner = 0
 		else if(prob(50) && toner > 0)
 			new /obj/effect/decal/cleanable/blood/oil(get_turf(src))
 			toner = 0
@@ -68,8 +67,7 @@
 			dat += "Printing: [copies] copies."
 			dat += "<a href='byond://?src=[REF(src)];min=1'>-</a> "
 			dat += "<a href='byond://?src=[REF(src)];add=1'>+</a><BR><BR>"
-			if(photocopy)
-				dat += "Printing in <a href='byond://?src=[REF(src)];colortoggle=1'>[greytoggle ? "Grayscale" : "Colored"]</a><BR><BR>"
+			dat += "Printing in <a href='byond://?src=[REF(src)];colortoggle=1'>[greytoggle ? "Grayscale" : "Colored"]</a><BR><BR>"
 			if(isAI(user))
 				dat += "<a href='byond://?src=[REF(src)];aipic=1'>Print photo from database</a><BR><BR>"
 	else if(toner)
@@ -135,14 +133,14 @@
 	busy = business
 	update_icon()
 	if(timer)
-		addtimer(CALLBACK, .proc/set_busy, !business) timer)
+		addtimer(CALLBACK(src, .proc/set_busy, !business), timer)
 
 /obj/machinery/photocopier/proc/remove_photocopy(obj/item/O, mob/user)
-	if(!issilicon(user)) //surprised this check didn't exist before, putting stuff in AI's hand is bad
+	if(in_range(src, user)) //surprised this check didn't exist before, putting stuff in AI's hand is bad
 		O.forceMove(user.loc)
 		user.put_in_hands(O)
 	else
-		O.forceMove(drop_location())
+		O.forceMove(loc)
 	to_chat(user, "<span class='notice'>You take [O] out of [src].</span>")
 
 /obj/machinery/photocopier/attackby(obj/item/O, mob/user)
@@ -168,11 +166,10 @@
 /obj/item/toner
 	name = "toner cartridge"
 	icon_state = "tonercartridge"
-	grind_results = list("iodine" = 40, "iron" = 10)
 	var/charges = 5
 	var/max_charges = 5
 
-/obj/item/toner/photocopier_insertion(obj/machinery/photocopier/P)
+/obj/item/toner/photocopier_insertion(obj/machinery/photocopier/P, mob/user)
 	if(P.toner > 0)
 		to_chat(user, "<span class='notice'>This cartridge is not yet ready for replacement! Use up the rest of the toner.</span>")
 		return FALSE

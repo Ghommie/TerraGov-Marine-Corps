@@ -15,7 +15,7 @@
 	w_class = WEIGHT_CLASS_TINY
 	throw_range = 1
 	throw_speed = 1
-	slot_flags = ITEM_SLOT_HEAD
+	flags_equip_slot = ITEM_SLOT_HEAD
 	flags_armor_protection = HEAD
 	resistance_flags = FLAMMABLE
 	//max_integrity = 50
@@ -30,18 +30,6 @@
 	var/list/stamped
 //	var/rigged = FALSE
 	var/spam_flag = FALSE
-	var/contact_poison // Reagent ID to transfer on contact
-	var/contact_poison_volume = 0
-
-/obj/item/paper/pickup(user)
-	if(contact_poison && ishuman(user))
-		var/mob/living/carbon/human/H = user
-		var/obj/item/clothing/gloves/G = H.gloves
-		if(!istype(G) || G.transfer_prints)
-			H.reagents.add_reagent(contact_poison,contact_poison_volume)
-			contact_poison = null
-	..()
-
 
 /obj/item/paper/Initialize()
 	. = ..()
@@ -66,7 +54,7 @@
 	. = ..()
 	readme(user)
 
-/obj/item/paper/proc/readme(user)
+/obj/item/paper/proc/readme(mob/user)
 	if(is_blind(user))
 		return
 	var/datum/asset/assets = get_asset_datum(/datum/asset/spritesheet/simple/paper)
@@ -96,8 +84,8 @@
 		return
 	if((CLUMSY in usr.mutations) && prob(25))
 		to_chat(usr, "<span class='warning'>You cut yourself on the paper! Ahhhh! Ahhhhh!</span>")
-		damageoverlaytemp = 9001
-		flash_pain()
+		usr.damageoverlaytemp = 9001
+		usr.flash_pain()
 		return
 	var/n_name = stripped_input(usr, "What would you like to label the paper?", "Paper Labelling", null, MAX_NAME_LEN)
 	if((loc == usr && usr.stat == CONSCIOUS))
@@ -208,13 +196,14 @@
 	updateinfolinks()
 	update_icon()
 
-/obj/item/paper/proc/parsepencode(t, obj/item/pen/P, mob/user, iscrayon = FALSE)
+/obj/item/paper/proc/parsepencode(t, obj/item/tool/pen/P, mob/user, iscrayon = FALSE)
 	if(length(t) < 1)		//No input means nothing needs to be parsed
 		return
 
+	var/tint
 	if(iscrayon)
 		var/obj/item/toy/crayon/C = P
-		var/tint = C.colour
+		tint = C.colour
 
 	t = parsemarkdown(t, user, iscrayon, tint, P)
 
@@ -273,7 +262,7 @@
 /obj/item/paper/Topic(href, href_list)
 	. = ..()
 	var/literate = usr.is_literate()
-	if(!usr.incapacitated || !Adjacent(usr) || literate)
+	if(!usr.incapacitated() || !Adjacent(usr) || literate)
 		return
 
 	if(href_list["help"])
@@ -282,7 +271,7 @@
 	if(href_list["write"])
 		var/id = href_list["write"]
 		var/t =  stripped_multiline_input("Enter what you want to write:", "Write", no_trim = TRUE)
-		if(!t || usr.incapacitated || !Adjacent(usr) || literate)
+		if(!t || usr.incapacitated() || !Adjacent(usr) || literate)
 			return
 		var/obj/item/i = usr.get_active_held_item()	//Check to see if he still got that darn pen, also check if he's using a crayon or pen.
 		var/iscrayon = FALSE
@@ -307,49 +296,43 @@
 			update_icon()
 
 
-/obj/item/paper/attackby(obj/item/P, mob/living/carbon/human/user, params)
+/obj/item/paper/attackby(obj/item/I, mob/living/carbon/human/user, params)
 	. = ..()
 
 	if(resistance_flags & ON_FIRE)
 		return
 
-	if(P.is_hot())
+	if(I.heat_source < 400)
 		if((CLUMSY in user.mutations) && prob(10))
 			user.visible_message("<span class='warning'>[user] accidentally ignites [user.p_them()]self!</span>", \
 								"<span class='userdanger'>You miss the paper and accidentally light yourself on fire!</span>")
-			user.dropItemToGround(P)
+			user.dropItemToGround(I)
 			user.adjust_fire_stacks(1)
 			user.IgniteMob()
 			return
 
 		if(in_range(user, src)) //to prevent issues as a result of telepathically lighting a paper
-			burnpaper(P, user)
+			burnpaper(I, user)
 		return
 
-	if(istype(P, /obj/item/paper) || istype(P, /obj/item/photo))
-		if (istype(P, /obj/item/paper/carbon))
-			var/obj/item/paper/carbon/C = P
-			if (!C.iscopy && !C.copied)
-				to_chat(user, "<span class='notice'>Take off the carbon copy first.</span>")
-				add_fingerprint(user)
-				return
-		if(loc != user)
+	var/obj/item/paper/P = I
+	if((istype(P) && P.can_bundle()) || istype(I, /obj/item/photo))
+		if(!user.temporarilyRemoveItemFromInventory(P) || !user.temporarilyRemoveItemFromInventory(src))
 			return
-		var/obj/item/paper_bundle/B = new(get_turf(user))
+		var/obj/item/paper_bundle/B = new(user.loc)
 		if (name != "paper")
 			B.name = name
-		else if (P.name != "paper" && P.name != "photo")
-			B.name = P.name
-		user.dropItemToGround(P)
-		user.dropItemToGround(src)
+		else if (I.name != "paper" && I.name != "photo")
+			B.name = I.name
+		if(!B.insert_sheet_at(user, length(B.pages) + 1, src, TRUE))
+			return
+		if(!B.insert_sheet_at(user,length(B.pages) + 1, I, TRUE))
+			return
 		to_chat(user, "<span class='notice'>You clip [P] to [src].</span>")
-		B.attach_doc(src, user, TRUE)
-		B.attach_doc(P, user, TRUE)
 		user.put_in_hands(B)
-
-	if(istype(P, /obj/item/pen) || istype(P, /obj/item/toy/crayon))
+	else if(istype(P, /obj/item/tool/pen) || istype(P, /obj/item/toy/crayon))
 		if(is_blind(user))
-			to_chat(user, "<span class='warning'>You can't see enough to read or write</span>)
+			to_chat(user, "<span class='warning'>You are too blind to read or write</span>")
 			return
 		if(user.is_literate())
 			user << browse("<HTML><HEAD><TITLE>[name]</TITLE></HEAD><BODY>[info_links]<HR>[stamps]</BODY><div align='right'style='position:fixed;bottom:0;font-style:bold;'><A href='?src=[REF(src)];help=1'>\[?\]</A></div></HTML>", "window=[name]")
@@ -358,34 +341,37 @@
 			to_chat(user, "<span class='notice'>You don't know how to read or write.</span>")
 			return
 
-	else if(istype(P, /obj/item/stamp))
-		var/obj/item/stamp/S = P
+	else if(istype(P, /obj/item/tool/stamp))
+		var/obj/item/tool/stamp/S = P
 
 		if(!in_range(src, user))
 			return
-
-		(image_threshold < 1)
+		if(image_threshold < 1)
 			to_chat(user, "<span class='notice'>You stamp the overly cluttered [name] with your rubber stamp to no effect.</span>")
 		else
-			var/datum/asset/spritesheet/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
-			if (isnull(stamps))
-				stamps = sheet.css_tag()
-			stamps += sheet.add_icon_markdown(S.icon_state, S.stampcolor)
-			var/image/mutable_appearance/stampoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paper_[S.icon_state]")
-			stampoverlay.color = S.stampcolor
-			switch(S.stamp_flags)
-				if(STAMP_CIRCULAR)
-					stampoverlay.pixel_x = rand(-2, 0)
-					stampoverlay.pixel_y = rand(-1, 2)
-				if(STAMP_RECTANGULAR)
-					stampoverlay.pixel_x = rand(-2, 2)
-					stampoverlay.pixel_y = rand(-3, 2)
-			LAZYADD(stamped, S.icon_state)
-			stamped[S.icon_state] = S.stampcolor
-			add_overlay(stampoverlay)
+			stamp_paper(S.icon_state, S.stamp_flags, S.stampcolor)
 			to_chat(user, "<span class='notice'>You stamp \the [src] with your rubber stamp.</span>")
 		playsound(loc, 'sound/effects/stamp.ogg', 50, 1)
 	add_fingerprint(user)
+
+/obj/item/paper/proc/stamp_paper(stamp, offset_flag, stampcolor)
+	var/datum/asset/spritesheet/simple/paper/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
+	if (isnull(stamps))
+		stamps = sheet.css_tag()
+	stamps += sheet.add_icon_markdown(stamp, stampcolor)
+	var/mutable_appearance/stampoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paper_[stamp]")
+	stampoverlay.color = stampcolor
+	switch(offset_flag)
+		if(STAMP_CIRCULAR)
+			stampoverlay.pixel_x = rand(-2, 0)
+			stampoverlay.pixel_y = rand(-1, 2)
+		if(STAMP_RECTANGULAR)
+			stampoverlay.pixel_x = rand(-2, 2)
+			stampoverlay.pixel_y = rand(-3, 2)
+	LAZYADD(stamped, stamp)
+	stamped[stamp] = stampcolor
+	add_overlay(stampoverlay)
+
 
 /*
 /obj/item/paper/fire_act(exposed_temperature, exposed_volume)
@@ -397,22 +383,17 @@
 /obj/item/paper/flamer_fire_act()
 	fire_act() */
 
-/obj/item/paper/can_bundle(mob/user)
+/obj/item/paper/proc/can_bundle(mob/user)
 	return TRUE
 
-/obj/item/paper/photocopy_act(obj/machinery/photocopier/P, mob/user)
+/obj/item/paper/photocopy_act(obj/machinery/photocopier/P)
 	var/cost = P.greytoggle ? 1 : 2
 	if(P.toner < cost)
 		return FALSE
 	var/tonality = P.greytoggle ? null : P.toner > 10 ? "#101010" : "#808080"
-	copy_paper(loc, obj/item/paper, tonality)
+	copy_paper(loc, /obj/item/paper, tonality)
 	P.toner = min(P.toner - cost, 0)
 	return TRUE
-
-/obj/item/paper/photocopier/photocopier_insertion(obj/machinery/photocopier/P)
-	. = ..()
-	if(.)
-		P.copy = src
 
 /obj/item/paper/proc/copy_paper(atom/newloc, newtype = /obj/item/paper, newcolor)
 	var/obj/item/paper/C = new newtype(newloc)
@@ -420,10 +401,10 @@
 	if(newcolor)
 		copycontents = replacetext(copycontents, regex("(?=<font face=\\\".*\\\"\\s)?color=\\\".*\\\"", "igm"), "color=[newcolor]")	//breaks the existing color tag. Now regex flavored.
 	C.info = copycontents
-	C.name = "Copy - [c.name]"
+	C.name = "Copy - [name]"
 	C.fields = fields
 	C.stamps = stamps
-	C.copy_overlays(copy, TRUE)
+	C.copy_overlays(src, TRUE)
 	C.stamped = stamped?.Copy()
 	if(newcolor)
 		var/datum/asset/spritesheet/simple/paper/P = get_asset_datum(/datum/asset/spritesheet/simple/paper)
@@ -431,14 +412,14 @@
 		if(stamps && stamped)
 			if(isnull(C.stamps))
 				C.stamps = P.css_tag()
-			C.stamps += sheet.add_icon_markdown(stamped[counter++], newcolor)
+			C.stamps += P.add_icon_markdown(stamped[counter++], newcolor)
 		for(var/E in C.overlays)
 			var/image/I = E
 			I.color = newcolor
 		for(var/O in logos)
 			var/list/U = uniqueList(C.logos[O])
 			for(var/tag in U)
-				replacetext(C.info, P.icon_tag(tag), P.add_icon_markdown(O, newcolor, C))
+				C.info = replacetext(C.info, P.icon_tag(tag), P.add_icon_markdown(O, newcolor, C))
 	else
 		C.stamps = stamps
 		C.logos = logos?.Copy()
@@ -468,10 +449,13 @@
 /obj/item/paper/crumpled
 	name = "paper scrap"
 	icon_state = "scrap"
-	slot_flags = null
+	flags_equip_slot = null
 
 /obj/item/paper/crumpled/update_icon()
 	return
+
+/obj/item/paper/crumpled/can_bundle()
+	return FALSE
 
 /obj/item/paper/crumpled/bloody
 	icon_state = "scrap_bloodied"

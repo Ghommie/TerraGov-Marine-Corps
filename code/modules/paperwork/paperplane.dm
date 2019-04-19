@@ -8,7 +8,7 @@
 	throwforce = 0
 	w_class = WEIGHT_CLASS_TINY
 	resistance_flags = FLAMMABLE
-	max_integrity = 50
+//	max_integrity = 50
 
 	var/hit_probability = 2 //%
 	var/obj/item/paper/internalPaper
@@ -24,13 +24,13 @@
 	pixel_x = rand(-9, 9)
 	if(newPaper)
 		internalPaper = newPaper
-		flags_1 = newPaper.flags_1
+		flags_atom = newPaper.flags_atom
+		resistance_flags = newPaper.resistance_flags
 		color = newPaper.color
 		newPaper.forceMove(src)
 	else
 		internalPaper = new(src)
 	update_icon()
-
 
 /obj/item/paperplane/on_stored_atom_del(atom/A)
 	if(A == internalPaper)
@@ -62,7 +62,7 @@
 	var/list/stamped = internalPaper.stamped
 	if(stamped)
 		for(var/S in stamped)
-			var/mutable_appearance/planeoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paperplane_[S.icon_state]")
+			var/mutable_appearance/planeoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paperplane_[S]")
 			planeoverlay.color = stamped[S]
 			add_overlay(planeoverlay)
 
@@ -87,7 +87,7 @@
 		internalPaper.attackby(P, user) //spoofed attack to update internal paper.
 		update_icon()
 
-	else if(P.is_hot())
+	else if(P.heat_source > 400)
 		if((CLUMSY in user.mutations) && prob(10))
 			user.visible_message("<span class='warning'>[user] accidentally ignites [user.p_them()]self!</span>", \
 				"<span class='userdanger'>You miss [src] and accidentally light yourself on fire!</span>")
@@ -134,7 +134,7 @@
 	to_chat(user, "<span class='notice'>Alt-click [src] to fold it into a paper plane.</span>")
 
 /obj/item/paper/AltClick(mob/living/carbon/user, obj/item/I)
-	if(!istype(user) || isxeno(user) || !adjacent(user) || user.incapacitated())
+	if(!Adjacent(user) || user.incapacitated() || !istype(user) || isxeno(user))
 		return
 	to_chat(user, "<span class='notice'>You fold [src] into the shape of a plane!</span>")
 	user.temporarilyRemoveItemFromInventory(src)

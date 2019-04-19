@@ -20,7 +20,7 @@
 	. = ..()
 	update_icon()
 	if(prob(1)) //some videogame reference
-		desc = "<span class='italic'>[pick("Hi there, would you like to sign my petition?", "Sign this petition or I'll follow you home and kill your dog.", "Are you gonna sign this or will it be your surviving family members?"]</span>"
+		desc = "<span class='italic'>[pick("Hi there, would you like to sign my petition?", "Sign this petition or I'll follow you home and kill your dog.", "Are you gonna sign this or will it be your surviving family members?")]</span>"
 
 /obj/item/clipboard/Destroy()
 	QDEL_NULL(haspen)
@@ -41,9 +41,9 @@
 	if(istype(I, /obj/item/paper) || istype(I, /obj/item/photo))
 		user.drop_held_item()
 		I.forceMove(src)
-		if(istype(W, /obj/item/paper))
+		if(istype(I, /obj/item/paper))
 			toppaper = I
-		to_chat(user, "<span class='notice'>You clip \the [W] onto \the [src].</span>")
+		to_chat(user, "<span class='notice'>You clip \the [I] onto \the [src].</span>")
 		update_icon()
 	else if(istype(toppaper) && istype(I, /obj/item/tool/pen))
 		toppaper.attackby(I, usr)

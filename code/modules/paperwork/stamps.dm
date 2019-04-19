@@ -1,4 +1,4 @@
-/obj/item/stamp
+/obj/item/tool/stamp
 	name = "generic rubber stamp"
 	desc = "A rubber stamp for stamping important documents."
 	icon = 'icons/obj/bureaucracy.dmi'
@@ -11,55 +11,54 @@
 	matter = list("metal" = 60)
 	attack_verb = list("stamped")
 	var/stamp_flags = STAMP_RECTANGULAR
+	var/stampcolor
 
-/obj/item/stamp/suicide_act(mob/user)
+/obj/item/tool/stamp/suicide_act(mob/user)
 	user.visible_message("<span class='suicide'>[user] stamps 'VOID' on [user.p_their()] forehead, then promptly falls over, dead.</span>")
 	return (OXYLOSS)
 
-/obj/item/stamp/ok
+/obj/item/tool/stamp/ok
 	name = "\improper GRANTED rubber stamp"
 	icon_state = "stamp-ok"
-	stamp_flags = STAMP_RECTANGULAR|STAMP_GRANTED
 
-/obj/item/stamp/qm
+/obj/item/tool/stamp/qm
 	name = "quartermaster's rubber stamp"
 	icon_state = "stamp-qm"
 
-/obj/item/stamp/law
+/obj/item/tool/stamp/law
 	name = "law office's rubber stamp"
 	icon_state = "stamp-law"
 
-/obj/item/stamp/captain
+/obj/item/tool/stamp/captain
 	name = "captain's rubber stamp"
 	icon_state = "stamp-cap"
 	stamp_flags = STAMP_CIRCULAR
 
-/obj/item/stamp/hop
+/obj/item/tool/stamp/hop
 	name = "head of personnel's rubber stamp"
 	icon_state = "stamp-hop"
 
-/obj/item/stamp/hos
+/obj/item/tool/stamp/hos
 	name = "head of security's rubber stamp"
 	icon_state = "stamp-hos"
 
-/obj/item/stamp/ce
+/obj/item/tool/stamp/ce
 	name = "chief engineer's rubber stamp"
 	icon_state = "stamp-ce"
 
-/obj/item/stamp/rd
+/obj/item/tool/stamp/rd
 	name = "research director's rubber stamp"
 	icon_state = "stamp-rd"
 
-/obj/item/stamp/cmo
+/obj/item/tool/stamp/cmo
 	name = "chief medical officer's rubber stamp"
 	icon_state = "stamp-cmo"
 
-/obj/item/stamp/denied
+/obj/item/tool/stamp/denied
 	name = "\improper DENIED rubber stamp"
 	icon_state = "stamp-deny"
-	stamp_flags = STAMP_RECTANGULAR|STAMP_DENIED
 
-/obj/item/stamp/clown
+/obj/item/tool/stamp/clown
 	name = "clown's rubber stamp"
 	icon_state = "stamp-clown"
 
@@ -79,7 +78,7 @@
 	force = 5
 	throwforce = 6
 	hitsound = 'sound/weapons/bladeslice.ogg'
-	stamp_flags = STAMP_CIRCULAR|STAMP_SPECIAL
+	stamp_flags = STAMP_CIRCULAR
 
 /obj/item/tool/stamp/ro
 	name = "requisition officer's rubber stamp"

@@ -11,7 +11,8 @@
 	set src in usr
 
 	if (copies_left > 0)
-		var/obj/item/paper/carboncopy/C = copy_paper(usr.loc, obj/item/paper/carboncopy)
+		var/obj/item/paper/carboncopy/C = copy_paper(usr.loc, /obj/item/paper/carboncopy)
+		usr.put_in_hands(C)
 		to_chat(usr, "<span class='notice'>You tear off a carbon-copy!</span>")
 		copies_left--
 		update_icon()
@@ -19,8 +20,9 @@
 		to_chat(usr, "There are no more carbon copies attached to this paper!")
 
 /obj/item/paper/carbon/can_bundle(mob/user)
-	if (copies_left)
-		to_chat(user, "<span class='notice'>Take off the carbon cop[copies_left > 1 : "ies" : "y"] first.</span>")
+	if(copies_left)
+		if(user)
+			to_chat(user, "<span class='notice'>Take off the carbon cop[copies_left > 1 ? "ies" : "y"] first.</span>")
 		return FALSE
 	return TRUE
 

@@ -11,12 +11,7 @@
 	layer = ABOVE_OBJ_LAYER
 	resistance_flags = INDESTRUCTIBLE | LAVA_PROOF | FIRE_PROOF | ACID_PROOF
 
-/obj/item/documents/photocopier_insertion(machinery/photocopier/P, mob/user)
-	. = ..()
-	if(.)
-		P.doccopy = src
-
-/obj/item/documents/photocopy_act(obj/machinery/photocopier/P, mob/user)
+/obj/item/documents/photocopy_act(obj/machinery/photocopier/P)
 	if(P.toner < 6) //number of papers in the sprite.
 		return FALSE
 	new /obj/item/documents/photocopy(P.loc, src)
@@ -62,9 +57,9 @@
 			to_chat(user, "<span class='warning'>There is already a forged seal on [src]!</span>")
 		else
 			var/obj/item/toy/crayon/C = O
-			name = "[C.item_color] secret documents"
+			name = "[C.colourName] secret documents"
 			icon_state = "docs_[C.colourName]"
-			forgedseal = C.item_color
+			forgedseal = C.colourName
 			to_chat(user, "<span class='notice'>You forge the official seal with a [C.colourName] crayon. No one will notice... right?</span>")
 			update_icon()
 	else

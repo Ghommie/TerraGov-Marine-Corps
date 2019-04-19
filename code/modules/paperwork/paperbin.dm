@@ -36,21 +36,20 @@
 	return ..()
 
 /obj/item/paper_bin/MouseDrop(atom/over_object)
-	if(over_object == usr && (ismonkey(usr)||ishuman(usr) && !usr.incapacitated() && Adjacent(usr))
-		if(!usr.get_active_held_item())
-			usr.put_in_hands(src)
+	if(over_object == usr && Adjacent(usr) && (ismonkey(usr) || ishuman(usr)) && !usr.incapacitated() && !usr.get_active_held_item())
+		usr.put_in_hands(src)
 
 /obj/item/paper_bin/attack_paw(mob/user)
 	return attack_hand(user)
 
-//ATTACK HAND IGNORING PARENT RETURN VALUE
+//ATTACK HAND IGNORING PARENT RETURN VALUE AND I CAN'T HELP
 /obj/item/paper_bin/attack_hand(mob/user)
 	user.changeNext_move(CLICK_CD_MELEE)
 	if(bin_pen)
 		bin_pen.add_fingerprint(user)
 		bin_pen.forceMove(user.loc)
-		user.put_in_hands(P)
-		to_chat(user, "<span class='notice'>You take [P] out of \the [src].</span>")
+		user.put_in_hands(bin_pen)
+		to_chat(user, "<span class='notice'>You take [bin_pen] out of \the [src].</span>")
 		bin_pen = null
 		update_icon()
 	else if(total_paper >= 1)
@@ -58,8 +57,9 @@
 		update_icon()
 		// If there's any custom paper on the stack, use that instead of creating a new paper.
 		var/obj/item/paper/P
-		if(papers.len > 0)
-			P = papers[papers.len]
+		var/toppaper = length(papers)
+		if(toppaper)
+			P = papers[toppaper]
 			papers.Remove(P)
 		else
 			P = new papertype(src)
@@ -105,14 +105,14 @@
 		to_chat(user, "It doesn't contain anything.")
 
 /obj/item/paper_bin/update_icon()
-	icon_state = "paper_bin[total_paper < 1 ? "0" : ""]
+	icon_state = "paper_bin[total_paper < 1 ? "0" : ""]"
 	cut_overlays()
 	if(bin_pen)
 		add_overlay(mutable_appearance(bin_pen.icon, bin_pen.icon_state))
 
 /obj/item/paper_bin/carboncopy
 	name = "carbon-copy paper bin"
-	icon_state = "paper_bin2
+	icon_state = "paper_bin2"
 	papertype = /obj/item/paper/carbon
 
 /obj/item/paper_bin/construction

@@ -97,7 +97,7 @@
 		return
 
 	var/dat = "<center><table>"
-	for(i in 1 to length(contents))
+	for(var/i in 1 to length(contents))
 		var/obj/item/P = contents[i]
 		dat += "<tr><td><a href='?src=[REF(src)];retrieve=[REF(P)]'>[P.name]</a></td></tr>"
 	dat += "</table></center>"
@@ -107,7 +107,7 @@
 	onclose(user, "copier")
 
 /obj/structure/filingcabinet/Topic(href, href_list)
-	if(!user.Adjacent() || user.incapacitated())
+	if(!usr.Adjacent() || usr.incapacitated())
 		return
 	if(href_list["retrieve"])
 		usr << browse("", "window=filingcabinet") // Close the menu
@@ -140,9 +140,9 @@
 
 /obj/structure/filingcabinet/records
 	desc = "A large cabinet with drawers, commonly used to store records of each crewmember."
-	var/category
+	var/records_flags
 
-/obj/structure/filingcabinet/Initialize(mapload)
+/obj/structure/filingcabinet/records/Initialize(mapload)
 	. = ..()
 	if(!mapload)
 		populate()
@@ -158,13 +158,13 @@
 
 /obj/structure/filingcabinet/records/proc/sort_record(datum/data/record/G)
 	var/list/recordkeepers
-	if(categories & CAT_SECURITY)
-		recordkeeper[CAT_SECURITY] = list(GLOB.datacore.security)
-	if(categories & CAT_MEDICAL)
-		recordkeeper[CAT_MEDICAL] = list(GLOB.datacore.medical)
-	var/item/folder/F
-	if(length(recordkeeper) > 1)
-		F = new(src)
+	if(records_flags & CAT_SECURITY)
+		recordkeepers[CAT_SECURITY] = list(GLOB.datacore.security)
+	if(records_flags & CAT_MEDICAL)
+		recordkeepers[CAT_MEDICAL] = list(GLOB.datacore.medical)
+	var/obj/item/folder/F
+	if(length(recordkeepers) > 1)
+		F = new (src)
 		F.name = "folder - '[G.fields["name"]]'"
 	for(var/L in recordkeepers)
 		var/list/holder = L
@@ -173,7 +173,7 @@
 			continue
 		add_record(G, R, holder, F)
 
-/obj/structure/filingcabiner/records/proc/add_record(datum/data/record/G, datum/data/record/R, holder, item/folder/F)
+/obj/structure/filingcabinet/records/proc/add_record(datum/data/record/G, datum/data/record/R, holder, obj/item/folder/F)
 	var/obj/item/paper/P = new /obj/item/paper(F ? F : src)
 	switch(holder)
 		if(CAT_MEDICAL)
@@ -186,21 +186,20 @@
 			P.info = "<CENTER><B>Security Record</B></CENTER><BR>"
 			P.info += "Name: [G.fields["name"]] ID: [G.fields["id"]]<BR>\nSex: [G.fields["sex"]]<BR>\nAge: [G.fields["age"]]<BR>\nFingerprint: [G.fields["fingerprint"]]<BR>\nPhysical Status: [G.fields["p_stat"]]<BR>\nMental Status: [G.fields["m_stat"]]<BR>"
 			P.info += "<BR>\n<CENTER><B>Security Data</B></CENTER><BR>\nCriminal Status: [R.fields["criminal"]]<BR>\n<BR>\nMinor Crimes: [R.fields["mi_crim"]]<BR>\nDetails: [R.fields["mi_crim_d"]]<BR>\n<BR>\nMajor Crimes: [R.fields["ma_crim"]]<BR>\nDetails: [R.fields["ma_crim_d"]]<BR>\n<BR>\nImportant Notes:<BR>\n\t[R.fields["notes"]]<BR>\n<BR>\n<CENTER><B>Comments/Log</B></CENTER><BR>"
-	comment_field(G, R, P)
+	comment_field(R, P)
 
-/obj/structure/filingcabinet/records/proc/comment_field(datum/data/record/G, datum/data/record/R, obj/item/paper/P)
+/obj/structure/filingcabinet/records/proc/comment_field(datum/data/record/R, obj/item/paper/P)
 	var/counter = 1
-	while(S.fields["com_[counter]"])
-		P.info += "[S.fields["com_[counter]"]]<BR>"
+	while(R.fields["com_[counter]"])
+		P.info += "[R.fields["com_[counter]"]]<BR>"
 		counter++
 	P.info += "</TT>"
 
-
 /obj/structure/filingcabinet/records/security
-	category = CAT_SECURITY
+	records_flags = CAT_SECURITY
 
 /obj/structure/filingcabinet/records/medical
-	category = CAT_MEDICAL
+	records_flags = CAT_MEDICAL
 
 
 #undef CAT_SECURITY

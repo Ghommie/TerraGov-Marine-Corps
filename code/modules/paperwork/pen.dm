@@ -67,7 +67,7 @@
 
 /obj/item/tool/pen/chem/sleepypen
 	volume = 30
-	list_reagents = ("chloralhydrate" = 22)
+	list_reagents = list("chloralhydrate" = 22)
 
 /obj/item/tool/pen/chem/paralysis
-	list_reagents = ("zombiepowder" = 10, "cryptobiolin" = 15)
+	list_reagents = list("zombiepowder" = 10, "cryptobiolin" = 15)

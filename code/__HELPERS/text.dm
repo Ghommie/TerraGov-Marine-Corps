@@ -595,9 +595,9 @@ proc/TextPreview(var/string,var/len=40)
 
 	return t
 
-/proc/logo_markdown(t, crayon = FALSE, color, item/paper/P)
-	var/asset/datum/spritesheet/simple/paper/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
-	var/style = limited ? "crayon_" : "outline_"
+/proc/logo_markdown(t, crayon = FALSE, color, obj/item/paper/P)
+	var/datum/asset/spritesheet/simple/paper/sheet = get_asset_datum(/datum/asset/spritesheet/simple/paper)
+	var/style = crayon ? "crayon_" : "outline_"
 	t = replacetext(t, regex("%(nt|nanotrasen)logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]nt", color, P)]")
 	t = replacetext(t, regex("%(zippy|pizza|zippypizza)logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]pizza", color, P)]")
 	t = replacetext(t, regex("%(tgmc)?logo(?=\\s|$)", "igm"), "[sheet.add_icon_markdown("[style]tgmc", color, P)]")

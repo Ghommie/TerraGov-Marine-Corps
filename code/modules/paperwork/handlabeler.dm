@@ -27,7 +27,7 @@
 
 /obj/item/tool/hand_labeler/afterattack(atom/A, mob/user, proximity)
 	. = ..()
-	if(!proximity || !mode)
+	if(!proximity || !on)
 		return
 	if(!labels_left)
 		to_chat(user, "<span class='notice'>You've run out of labelling paper, feed some paper into it.</span>")
@@ -76,6 +76,9 @@
 /obj/item/tool/hand_labeler/attackby(obj/item/I, mob/user, params)
 	. = ..()
 	if(istype(I, /obj/item/paper))
+		var/obj/item/paper/P = I
+		if(!P.can_bundle(user))
+			return
 		to_chat(user, "<span class='notice'>You insert [I] into [src].</span>")
 		qdel(I)
 		labels_left = min(labels_left + 5, initial(labels_left))

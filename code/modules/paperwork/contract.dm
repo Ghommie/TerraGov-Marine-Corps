@@ -1,7 +1,8 @@
 /obj/item/paper/contract
 	throw_range = 3
 	throw_speed = 3
-	item_flags = NOBLUDGEON
+	flags_item = NOBLUDGEON
+	var/datum/mind/target
 
 /obj/item/paper/contract/proc/update_text()
 	return
@@ -12,9 +13,9 @@
 /obj/item/paper/contract/employment
 	icon_state = "paper_words"
 
-/obj/item/paper/contract/employment/Initialize(atom/loc, mob/living/nOwner)
+/obj/item/paper/contract/employment/Initialize(mapload, mob/living/nOwner)
 	. = ..()
-	if(!nOwner || !nOwner.mind)
+	if(!(nOwner?.mind))
 		return INITIALIZE_HINT_QDEL
 	target = nOwner.mind
 	update_text()
@@ -26,6 +27,6 @@
 /obj/item/paper/contract/employement/photocopy_act(obj/machinery/photocopier/P)
 	if(P.toner < 1)
 		return FALSE
-	var/obj/item/paper/contract/employment/C = new (P.loc, target.current)
+	new type (P.loc, target.current)
 	P.toner--
 	return TRUE
