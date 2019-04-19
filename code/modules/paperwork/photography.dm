@@ -326,3 +326,22 @@
 	pixel_x = P.fields["pixel_x"]
 	pixel_y = P.fields["pixel_y"]
 	photo_size = P.fields["size"]
+
+/obj/item/photo/photocopy_act(obj/machinery/photocopier/P)
+	var/cost = P.greytoggle ? 5 : 10
+	if(P.toner < cost)
+		return FALSE
+	var/obj/item/weapon/photo/p = new (P.loc)
+	if(P.greytoggle)
+		if(P.toner > 10)	//plenty of toner, go straight greyscale
+			P.img.MapColors(rgb(77,77,77), rgb(150,150,150), rgb(28,28,28), rgb(0,0,0))
+		else			//not much toner left, lighten the photo
+			P.img.MapColors(rgb(77,77,77), rgb(150,150,150), rgb(28,28,28), rgb(100,100,100))
+		P.update_icon()
+	P.toner = min(P.toner - cost, 0)
+	return TRUE
+
+/obj/item/photo/photocopier_insertion(machinery/photocopier/P, mob/user)
+	. = ..()
+	if(.)
+		P.photocopy = src

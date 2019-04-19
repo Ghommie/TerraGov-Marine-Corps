@@ -40,7 +40,7 @@
 	if(istype(M))
 		return
 	if(force)
-		return . = ..()
+		return ..()
 	log_combat(user, M, "stabbed", src)
 	if(M.can_inject(user, TRUE))
 		to_chat(user, "<span class='warning'>You stab [M] with the pen.</span>")

@@ -400,6 +400,20 @@
 /obj/item/paper/can_bundle(mob/user)
 	return TRUE
 
+/obj/item/paper/photocopy_act(obj/machinery/photocopier/P, mob/user)
+	var/cost = P.greytoggle ? 1 : 2
+	if(P.toner < cost)
+		return FALSE
+	var/tonality = P.greytoggle ? null : P.toner > 10 ? "#101010" : "#808080"
+	copy_paper(loc, obj/item/paper, tonality)
+	P.toner = min(P.toner - cost, 0)
+	return TRUE
+
+/obj/item/paper/photocopier/photocopier_insertion(obj/machinery/photocopier/P)
+	. = ..()
+	if(.)
+		P.copy = src
+
 /obj/item/paper/proc/copy_paper(atom/newloc, newtype = /obj/item/paper, newcolor)
 	var/obj/item/paper/C = new newtype(newloc)
 	var/copycontents = html_decode(info)
@@ -431,6 +445,7 @@
 	C.updateinfolinks()
 	C.update_icon()
 	return C
+
 
 /*
  * Construction paper

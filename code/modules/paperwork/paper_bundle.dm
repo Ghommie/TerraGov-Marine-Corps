@@ -148,31 +148,35 @@
 		O.add_fingerprint(usr)
 	qdel(src)
 
-/obj/item/weapon/paper_bundle/on_update_icon()
+/obj/item/weapon/paper_bundle/update_icon()
 	var/obj/item/paper/P = pages[1]
-	icon_state = P.icon_state
-	overlays = P.overlays
-	cut_underlays()
+	add_overlay(P)
+	underlays.Cut()
 	var/i = 0
 	var/photo = FALSE
 	for(var/obj/O in src)
-		var/image/I = image('icons/obj/bureaucracy.dmi')
 		if(istype(O, /obj/item/paper))
-			I.icon_state = O.icon_state
-			I.pixel_x -= min(1*i, 2)
-			I.pixel_y -= min(1*i, 2)
-			pixel_x = min(0.5*i, 1)
-			pixel_y = min(  1*i, 2)
-			underlays += img
+			var/image/mutable_appearance/I = image(O)
+			I.pixel_x -= min(1 * i, 2)
+			I.pixel_y -= min(1 * i, 2)
+			pixel_x = min(0.5 * i, 1)
+			pixel_y = min(1 * i, 2)
+			underlays.Add(I)
 			i++
-		else if(istype(O, /obj/item/photo))
+		else if(!photo && istype(O, /obj/item/photo))
 			var/obj/item/photo/P = O
-			img = P.tiny
+			var/image/mutable_appearance/I = image(P.tiny)
 			photo = TRUE
-			overlays += img
+			add_overlay(img)
 	if(i>1)
 		desc =  i > 1 ? "[i] papers clipped to each other." : "A single sheet of paper."
 	if(photo)
 		desc += "\nThere is a photo attached to it."
-	overlays += image('icons/obj/bureaucracy.dmi', "clip")
+	add_overlay(image('icons/obj/bureaucracy.dmi', "clip"))
+
+
+/obj/item/paper_bundle/photocopier_insertion(obj/machinery/photocopier/P, mob/user)
+	. = ..()
+	if(.)
+		P.bundle = src
 

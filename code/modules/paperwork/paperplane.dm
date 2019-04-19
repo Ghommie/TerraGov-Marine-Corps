@@ -31,14 +31,13 @@
 		internalPaper = new(src)
 	update_icon()
 
-/*
-/obj/item/paperplane/handle_atom_del(atom/A)
+
+/obj/item/paperplane/on_stored_atom_del(atom/A)
 	if(A == internalPaper)
 		internalPaper = null
 		if(!QDELETED(src))
 			qdel(src)
 	return ..()
-*/
 
 /obj/item/paperplane/Exited(atom/movable/AM, atom/newLoc)
 	. = ..()
