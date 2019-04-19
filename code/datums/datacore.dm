@@ -231,8 +231,8 @@ GLOBAL_DATUM_INIT(datacore, /datum/datacore, new)
 		S.fields["notes"] = "No notes."
 	security += S
 
-	for(var/a in GLOB.record_cabinets)
-		var/obj/structure/filingcabinet/records/R = a
+	for(var/A in GLOB.record_cabinets)
+		var/obj/structure/filingcabinet/records/R = A
 		R.sort_record(G)
 
 

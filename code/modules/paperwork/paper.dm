@@ -371,7 +371,7 @@
 			if (isnull(stamps))
 				stamps = sheet.css_tag()
 			stamps += sheet.add_icon_markdown(S.icon_state, S.stampcolor)
-			var/mutable_appearance/stampoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paper_[S.icon_state]")
+			var/image/mutable_appearance/stampoverlay = mutable_appearance('icons/obj/bureaucracy.dmi', "paper_[S.icon_state]")
 			stampoverlay.color = S.stampcolor
 			switch(S.stamp_flags)
 				if(STAMP_CIRCULAR)

@@ -81,6 +81,15 @@
 	else
 		return ..()
 
+/obj/structure/filingcabinet/attack_hand(mob/user)
+	ui_interact(user)
+
+/obj/structure/filingcabinet/attack_ai(mob/user)
+	ui_interact(user)
+
+/obj/structure/filingcabinet/attack_paw(mob/user)
+	ui_interact(user)
+
 /obj/structure/filingcabinet/ui_interact(mob/user)
 	. = ..()
 	if(!length(contents))
@@ -92,7 +101,22 @@
 		var/obj/item/P = contents[i]
 		dat += "<tr><td><a href='?src=[REF(src)];retrieve=[REF(P)]'>[P.name]</a></td></tr>"
 	dat += "</table></center>"
-	user << browse("<html><head><title>[name]</title></head><body>[dat]</body></html>", "window=filingcabinet;size=350x300")
+	var/datum/browser/popup = new(user, "filingcabinet", "<div align='center'>[name]</div>")
+	popup.set_content(dat)
+	popup.open(FALSE)
+	onclose(user, "copier")
+
+/obj/structure/filingcabinet/Topic(href, href_list)
+	if(!user.Adjacent() || user.incapacitated())
+		return
+	if(href_list["retrieve"])
+		usr << browse("", "window=filingcabinet") // Close the menu
+		var/obj/item/P = locate(href_list["retrieve"]) in src //contents[retrieveindex]
+		if(istype(P))
+			usr.put_in_hands(P)
+			updateUsrDialog()
+			flick("[initial(icon_state)]-open",src)
+
 
 /obj/structure/filingcabinet/attack_tk(mob/user)
 	if(anchored)
@@ -111,21 +135,11 @@
 			return
 	to_chat(user, "<span class='notice'>You find nothing in [src].</span>")
 
-/obj/structure/filingcabinet/Topic(href, href_list)
-	if(!user.Adjacent() || user.incapacitated())
-		return
-	if(href_list["retrieve"])
-		usr << browse("", "window=filingcabinet") // Close the menu
-		var/obj/item/P = locate(href_list["retrieve"]) in src //contents[retrieveindex]
-		if(istype(P))
-			usr.put_in_hands(P)
-			updateUsrDialog()
-			flick("[initial(icon_state)]-open",src)
-
 #define CAT_SECURITY	(1<<0)
 #define CAT_MEDICAL		(1<<1)
 
 /obj/structure/filingcabinet/records
+	desc = "A large cabinet with drawers, commonly used to store records of each crewmember."
 	var/category
 
 /obj/structure/filingcabinet/Initialize(mapload)
@@ -157,7 +171,7 @@
 		var/datum/data/record/R = find_record("name", G.fields["name"], recordkeepers[holder])
 		if(!R)
 			continue
-		add_record(G, R holder, F)
+		add_record(G, R, holder, F)
 
 /obj/structure/filingcabiner/records/proc/add_record(datum/data/record/G, datum/data/record/R, holder, item/folder/F)
 	var/obj/item/paper/P = new /obj/item/paper(F ? F : src)
@@ -172,7 +186,7 @@
 			P.info = "<CENTER><B>Security Record</B></CENTER><BR>"
 			P.info += "Name: [G.fields["name"]] ID: [G.fields["id"]]<BR>\nSex: [G.fields["sex"]]<BR>\nAge: [G.fields["age"]]<BR>\nFingerprint: [G.fields["fingerprint"]]<BR>\nPhysical Status: [G.fields["p_stat"]]<BR>\nMental Status: [G.fields["m_stat"]]<BR>"
 			P.info += "<BR>\n<CENTER><B>Security Data</B></CENTER><BR>\nCriminal Status: [R.fields["criminal"]]<BR>\n<BR>\nMinor Crimes: [R.fields["mi_crim"]]<BR>\nDetails: [R.fields["mi_crim_d"]]<BR>\n<BR>\nMajor Crimes: [R.fields["ma_crim"]]<BR>\nDetails: [R.fields["ma_crim_d"]]<BR>\n<BR>\nImportant Notes:<BR>\n\t[R.fields["notes"]]<BR>\n<BR>\n<CENTER><B>Comments/Log</B></CENTER><BR>"
-	comment_field(G, S,  P)
+	comment_field(G, R, P)
 
 /obj/structure/filingcabinet/records/proc/comment_field(datum/data/record/G, datum/data/record/R, obj/item/paper/P)
 	var/counter = 1
@@ -187,7 +201,6 @@
 
 /obj/structure/filingcabinet/records/medical
 	category = CAT_MEDICAL
-
 
 
 #undef CAT_SECURITY

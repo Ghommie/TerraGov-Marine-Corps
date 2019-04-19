@@ -28,6 +28,15 @@
 	var/busy = FALSE
 	var/list/canhold = list(/obj/item/paper, /obj/item/photo, /obj/item/paper_bundle, /obj/item/documents, /obj/item/toner)
 
+/obj/machinery/photocopier/attack_hand(mob/user)
+	ui_interact(user)
+
+/obj/machinery/photocopier/attack_ai(mob/user)
+	ui_interact(user)
+
+/obj/machinery/photocopier/attack_paw(mob/user)
+	ui_interact(user)
+
 /obj/machinery/photocopier/on_stored_atom_del(atom/movable/AM)
 	if(AM == copy)
 		copy = null
@@ -50,7 +59,9 @@
 /obj/machinery/photocopier/ui_interact(mob/user)
 	. = ..()
 	var/dat = "Photocopier<BR><BR>"
-	if(copy)
+	if(busy)
+		dat += "Currently busy, please stand by.<BR>"
+	else if(copy)
 		dat += "<a href='byond://?src=[REF(src)];remove=1'>Remove Paper</a><BR>"
 		if(toner)
 			dat += "<a href='byond://?src=[REF(src)];copy=1'>Copy</a><BR>"
@@ -64,8 +75,11 @@
 	else if(toner)
 		dat += "Please insert paper to copy.<BR><BR>"
 	dat += "Current toner level: [toner]"
-	if(!toner)
-		dat +="<BR>Please insert a new toner cartridge!"
+	switch(toner)
+		if(-INFINITY to 0)
+			dat +="<BR>Please insert a new toner cartridge!"
+		if(0 to 9)
+			dat += "<BR>toner cartridge level low!"
 	var/datum/browser/popup = new(user, "copier", "<div align='center'>Photocopier</div>")
 	popup.set_content(dat)
 	popup.open(FALSE)
@@ -86,8 +100,7 @@
 		if(copies < maxcopies)
 			copies++
 	else if(href_list["aipic"])
-		if(!istype(usr,/mob/living/silicon)) return
-		if(toner < 5)
+		if(!isAI(usr) || toner < 5)
 			return
 		var/mob/living/silicon/ai/AI = usr
 		var/obj/item/camera/siliconcam/camera = AI.aiCamera
@@ -113,7 +126,7 @@
 		visible_message("<span class='notice'>A red light on \the [src] flashes as it couldn't complete the task.</span>")
 		updateUsrDialog()
 		return FALSE
-	if(--counter)
+	if(counter--)
 		addtimer(CALLBACK(target, .proc/photocopy, copy, counter), 15)
 	updateUsrDialog()
 	return TRUE
