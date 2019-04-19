@@ -43,6 +43,7 @@ GLOBAL_LIST_EMPTY(meteor_list)				// List of all meteors.
 GLOBAL_LIST_EMPTY(active_jammers)             // List of active radio jammers
 GLOBAL_LIST_EMPTY(ladders)
 GLOBAL_LIST_EMPTY(trophy_cases)
+GLOBAL_LIST_EMPTY(record_cabinets)
 
 GLOBAL_LIST_EMPTY(wire_color_directory)
 GLOBAL_LIST_EMPTY(wire_name_directory)
@@ -56,4 +57,31 @@ GLOBAL_LIST_INIT(supply_drops, typecacheof(list(
 	/obj/structure/closet/crate,
 	/obj/machinery/vending)))
 
-GLOBAL_LIST_EMPTY(record_cabinets)
+//hypersleep related
+GLOBAL_LIST_INIT(cryoed_item_list, list(CRYO_ALPHA = list(), CRYO_BRAVO = list(), CRYO_CHARLIE = list(), CRYO_DELTA =list(), CRYO_SEC = list(), CRYO_REQ = list(), CRYO_ENGI = list(), CRYO_MED = list()))
+
+GLOBAL_LIST_INIT(do_not_preserve, typecacheof(list(
+	/obj/item/clothing/mask/cigarette,
+	/obj/item/clothing/glasses/sunglasses/fake,
+	/obj/item/clothing/glasses/mgoggles,
+	/obj/item/clothing/head/tgmcberet,
+	/obj/item/clothing/head/headband,
+	/obj/item/clothing/head/headset,
+	/obj/item/clothing/head/tgmcbandana,
+	/obj/item/clothing/gloves/black,
+	/obj/item/weapon/baton,
+	/obj/item/weapon/gun/energy/taser,
+	/obj/item/clothing/glasses/sunglasses/sechud,
+	/obj/item/radio/headset/almayer,
+	/obj/item/card/id,
+	/obj/item/clothing/under/marine,
+	/obj/item/clothing/shoes/marine,
+	/obj/item/clothing/head/tgmccap,
+	/obj/item/trash)))
+
+GLOBAL_LIST_INIT(do_not_preserve_empty, typecacheof(list(
+	/obj/item/storage/backpack/marine/satchel,
+	/obj/item/storage/belt/security/MP,
+	/obj/item/storage/backpack/marine/satchel/corpsman,
+	/obj/item/storage/backpack/marine/satchel/tech,
+	/obj/item/storage/backpack/marine/standard), only_root_path = TRUE))
