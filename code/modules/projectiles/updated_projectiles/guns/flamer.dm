@@ -218,10 +218,7 @@
 	if(!istype(T))
 		return
 
-	for(var/obj/flamer_fire/F in T) // No stacking flames!
-		qdel(F)
-
-	new /obj/flamer_fire(T, heat, burn, f_color)
+	T.ignite(heat, burn, f_color)
 
 	// Melt a single layer of snow
 	if(istype(T, /turf/open/snow))
@@ -442,6 +439,14 @@
 		playsound(src.loc, 'sound/effects/refill.ogg', 25, 1, 3)
 		return
 
+/turf/proc/ignite(fire_lvl, burn_lvl, f_color, fire_stacks = 0, fire_damage = 0)
+	//extinguish any flame present
+	var/obj/flamer_fire/F = locate(/obj/flamer_fire) in src
+	if(F)
+		qdel(F)
+
+	new /obj/flamer_fire(src, fire_lvl, burn_lvl, f_color, fire_stacks, fire_damage)
+
 //////////////////////////////////////////////////////////////////////////////////////////////////
 //Time to redo part of abby's code.
 //Create a flame sprite object. Doesn't work like regular fire, ie. does not affect atmos or heat
@@ -459,7 +464,7 @@
 	var/initial_firemod = 1.2
 	var/flame_color = "red"
 
-/obj/flamer_fire/New(location, fire_lvl, burn_lvl, fire_spread_amount, stack, init_dmg, intensity_var = 0, duration_var = 0, decay_coeff = 0.9, f_color)
+/obj/flamer_fire/Initialize(mapload, fire_lvl, burn_lvl, fire_spread_amount, stack, init_dmg, intensity_var = 0, duration_var = 0, decay_coeff = 0.9, f_color)
 	. = ..()
 	if (f_color)
 		flame_color = f_color
@@ -476,6 +481,12 @@
 	for(var/O in loc)
 		var/atom/A = O
 		A.flamer_fire_act(burnlevel, fire_stack, initial_firemod)
+		if(isliving(A))
+			var/mob/living/L = A
+			var/armor_block = L.run_armor_check("chest", "fire")
+			L.apply_damage(burnlevel * initial_firemod, BURN, null, armor_block)
+
+
 	if(!fire_spread_amount)
 		return
 	var/list/affected = circle_casted_turfs(src, fire_spread_amount, angle_coeff = 0.7, CALLBACK_DUMMY, /turf/.proc/CanPassContents, src, CALLBACK_DUMMY)
@@ -492,7 +503,6 @@
 	STOP_PROCESSING(SSobj, src)
 	return ..()
 
-
 /obj/flamer_fire/Crossed(mob/living/M) //Only way to get it to reliable do it when you walk into it.
 	. = ..()
 	if(istype(M))
@@ -504,10 +514,14 @@
 		if(istype(wear_suit, /obj/item/clothing/suit/fire) || (istype(wear_suit, /obj/item/clothing/suit/storage/marine/M35) && istype(head, /obj/item/clothing/head/helmet/marine/pyro)))
 			return CLAMP(. * 1.5, 0.75, 1) //Min 75% resist, max 100%
 
+/mob/living/carbon/Xenomorph/run_armor_check(def_zone = null, attack_flag = "melee")
+	if(attack_flag == "fire" && (xeno_caste.caste_flags & CASTE_FIRE_IMMUNE))
+		return 1
+	return ..()
+
+
 // override this proc to give different walking-over-fire effects
 /mob/living/flamer_fire_act(power, stack, fire_mod=1, crossed = FALSE)
-	if(fire_immune) // this is a /mob/living var that xenos use but humans dont
-		return
 	adjust_fire_stacks(stack)
 	if (prob(fire_stacks * 4 + power * 2))
 		IgniteMob()

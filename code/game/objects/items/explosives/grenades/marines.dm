@@ -134,6 +134,9 @@
 	burn_damage = burn_damage * (1 + rand(-int_var, int_var))
 	new /obj/flamer_fire(T, burn_duration, burn_intensity, radius, fire_stacks, burn_damage, int_var, dur_var, decay_var, colour)
 
+	for(var/turf/IT in filled_circle_turfs(T,radius))
+		IT.ignite(rand(burn_intensity*(0.5-int_var), burn_intensity*(0.5+int_var)) + rand(burn_intensity*(0.5-int_var), burn_intensity*(0.5+int_var)), rand(burn_duration*(0.5-int_var), burn_duration*(0.5-int_var)) + rand(burn_duration*(0.5-int_var), burn_duration*(0.5-int_var)), colour, burn_damage, fire_stacks)
+
 
 /obj/item/explosive/grenade/incendiary/molotov
 	name = "\improper improvised firebomb"
