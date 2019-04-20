@@ -166,7 +166,7 @@
 	var/diameter = radius * 2 + 1
 	var/y_axis = center.y - radius - 1
 	var/x_axis = center.x - radius - 1
-	var/list/grid[diameter][diameter]
+	var/list/grid
 	grid[center.x - x_axis][center.y - y_axis] = center
 
 	for(var/I in perimeter)
@@ -208,11 +208,12 @@
 				for(var/C in getline(IT, corner_ray) - IT)
 					var/turf/ST = C
 					grid[ST.x - x_axis][ST.y - y_axis] = 0
-
 	var/list/turfs = list()
 	for(var/x = 1 to diameter)
-		for(var/y in grid[x])
-			if(!y)
+		var/gridline = x
+		for(var/y in gridline)
+			var/turf/T = gridline[y]
+			if(!T)
 				continue
-			turfs += grid[x][y]
+			turfs += T
 	return turfs
