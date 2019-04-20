@@ -81,7 +81,7 @@
 	stamp_flags = STAMP_CIRCULAR
 
 /obj/item/tool/stamp/nt
-	name "\improper NT rubber stamp"
+	name = "\improper NT rubber stamp"
 	icon_state = "stamp-nt"
 
 /obj/item/tool/stamp/ro
