@@ -210,7 +210,7 @@
 					grid[ST.x - x_axis][ST.y - y_axis] = 0
 	var/list/turfs = list()
 	for(var/x = 1 to diameter)
-		var/gridline = x
+		var/list/gridline = x
 		for(var/y in gridline)
 			var/turf/T = gridline[y]
 			if(!T)
