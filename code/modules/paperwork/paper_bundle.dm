@@ -120,7 +120,6 @@
 		return
 	if((CLUMSY in usr.mutations) && prob(25))
 		to_chat(usr, "<span class='warning'>You cut yourself on the paper! Ahhhh! Ahhhhh!</span>")
-		usr.damageoverlaytemp = 9001
 		usr.flash_pain()
 		return
 	var/n_name = stripped_input(usr, "What would you like to label the bundle?", "Bundle Labelling", null, MAX_NAME_LEN)

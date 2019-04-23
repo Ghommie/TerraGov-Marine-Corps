@@ -36,7 +36,7 @@
 	return ..()
 
 /obj/item/paper_bin/MouseDrop(atom/over_object)
-	if(over_object == usr && Adjacent(usr) && (ismonkey(usr) || ishuman(usr)) && !usr.incapacitated() && !usr.get_active_held_item())
+	if(over_object == usr && usr.canUseTopic(src) && (ismonkey(usr) || ishuman(usr)) && !usr.get_active_held_item())
 		usr.put_in_hands(src)
 
 /obj/item/paper_bin/attack_paw(mob/user)

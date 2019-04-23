@@ -84,7 +84,6 @@
 		return
 	if((CLUMSY in usr.mutations) && prob(25))
 		to_chat(usr, "<span class='warning'>You cut yourself on the paper! Ahhhh! Ahhhhh!</span>")
-		usr.damageoverlaytemp = 9001
 		usr.flash_pain()
 		return
 	var/n_name = stripped_input(usr, "What would you like to label the paper?", "Paper Labelling", null, MAX_NAME_LEN)
@@ -136,7 +135,7 @@
 	else
 		user.visible_message("<span class='warning'>[user] begins to wipe [H]'s lipstick off with \the [src].</span>", \
 						 	 "<span class='notice'>You begin to wipe off [H]'s lipstick.</span>")
-		if(!do_after(user, 20, TRUE, 5, BUSY_ICON_FRIENDLY) && user.Adjacent(H))
+		if(!do_after(user, 20, TRUE, 5, BUSY_ICON_FRIENDLY) || !user.Adjacent(H))
 			return
 		user.visible_message("<span class='notice'>[user] wipes [H]'s lipstick off with \the [src].</span>", \
 							 "<span class='notice'>You wipe off [H]'s lipstick.</span>")
@@ -262,7 +261,7 @@
 /obj/item/paper/Topic(href, href_list)
 	. = ..()
 	var/literate = usr.is_literate()
-	if(!usr.incapacitated() || !Adjacent(usr) || literate)
+	if(!usr.canUseTopic(src) || literate)
 		return
 
 	if(href_list["help"])
@@ -271,7 +270,7 @@
 	if(href_list["write"])
 		var/id = href_list["write"]
 		var/t =  stripped_multiline_input("Enter what you want to write:", "Write", no_trim = TRUE)
-		if(!t || usr.incapacitated() || !Adjacent(usr) || literate)
+		if(!t || !usr.canUseTopic(src) || literate)
 			return
 		var/obj/item/i = usr.get_active_held_item()	//Check to see if he still got that darn pen, also check if he's using a crayon or pen.
 		var/iscrayon = FALSE

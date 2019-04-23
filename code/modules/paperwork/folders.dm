@@ -50,7 +50,7 @@
 			to_chat(user, "<span class='notice'>You scribble illegibly on the cover of [src]!</span>")
 			return
 		var/n_name = copytext(sanitize(input(user, "What would you like to label the folder?", "Folder Labelling", null) as text), 1, MAX_NAME_LEN)
-		if(user.Adjacent(src) && !user.incapacitated())
+		if(user.canUseTopic(src))
 			name = "folder[(n_name ? " - '[n_name]'" : null)]"
 	else
 		return ..()
@@ -66,7 +66,7 @@
 
 /obj/item/folder/Topic(href, href_list)
 	..()
-	if(usr.incapacitated() || usr.Adjacent(src))
+	if(!usr.canUseTopic(src))
 		return
 
 	if(href_list["remove"])

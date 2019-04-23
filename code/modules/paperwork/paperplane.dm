@@ -134,7 +134,7 @@
 	to_chat(user, "<span class='notice'>Alt-click [src] to fold it into a paper plane.</span>")
 
 /obj/item/paper/AltClick(mob/living/carbon/user, obj/item/I)
-	if(!Adjacent(user) || user.incapacitated() || !istype(user) || isxeno(user))
+	if(!usr.canUseTopic(src) || !istype(user) || isxeno(user))
 		return
 	to_chat(user, "<span class='notice'>You fold [src] into the shape of a plane!</span>")
 	user.temporarilyRemoveItemFromInventory(src)

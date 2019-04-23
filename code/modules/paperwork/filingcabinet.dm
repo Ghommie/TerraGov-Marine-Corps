@@ -106,7 +106,7 @@
 	onclose(user, "copier")
 
 /obj/structure/filingcabinet/Topic(href, href_list)
-	if(!usr.Adjacent() || usr.incapacitated())
+	if(!usr.canUseTopic(src))
 		return
 	if(href_list["retrieve"])
 		usr << browse("", "window=filingcabinet") // Close the menu
